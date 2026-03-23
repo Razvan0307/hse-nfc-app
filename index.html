@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HSE NFC Scan</title>
+
+    <link rel="manifest" href="manifest.json" />
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h2 {
+            color: #1d4ed8;
+        }
+        button {
+            padding: 12px 16px;
+            font-size: 18px;
+            margin: 10px 0;
+            width: 100%;
+            background: #1d4ed8;
+            color: white;
+            border: none;
+            border-radius: 6px;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin: 5px 0;
+            background: #ffffff;
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+        #locatie {
+            font-weight: bold;
+            color: #16a34a;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <h2>HSE NFC Scan</h2>
+
+    <p><strong>Locația Curentă:</strong> <span id="locatie">Nesetat</span></p>
+
+    <button id="scanNFC">📡 Scanează NFC</button>
+
+    <h3>Hamuri scanate:</h3>
+    <ul id="lista"></ul>
+
+    <button id="exportCSV">📁 Exportă în Excel (CSV)</button>
+    <button id="clearData" style="background:#dc2626">🗑️ Șterge date</button>
+
+    <script src="app.js"></script>
+
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("service-worker.js");
+        }
+    </script>
+
+</body>
+</html>
