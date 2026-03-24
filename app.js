@@ -168,29 +168,40 @@ async function scanNFC() {
 async function saveToSupabase(entry) {
 
   const checkUrl = `${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}&select=*`;
+
   const existing = await fetch(checkUrl, {
     headers: {
       apikey: SUPABASE_KEY,
       Authorization: `Bearer ${SUPABASE_KEY}`
     }
-  }).then(r => r.json());
+  }).then(async r => {
+    if (r.status === 204) return [];
+    return r.json();
+  });
 
   // UPDATE
   if (existing.length > 0) {
-    await fetch(`${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}`, {
+    const resp = await fetch(`${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}`, {
       method: "PATCH",
       headers: {
         apikey: SUPABASE_KEY,
         Authorization: `Bearer ${SUPABASE_KEY}`,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        Prefer: "return=representation"
       },
       body: JSON.stringify(entry)
     });
+
+    if (resp.status === 204) {
+      console.log("✅ UPDATE reușit (204)");
+    } else {
+      console.log("✅ UPDATE JSON:", await resp.json());
+    }
   }
 
   // INSERT
   else {
-    await fetch(`${SUPABASE_URL}/rest/v1/echipamente`, {
+    const resp = await fetch(`${SUPABASE_URL}/rest/v1/echipamente`, {
       method: "POST",
       headers: {
         apikey: SUPABASE_KEY,
@@ -200,6 +211,7 @@ async function saveToSupabase(entry) {
       },
       body: JSON.stringify(entry)
     });
+    console.log("✅ INSERT:", await resp.json());
   }
 }
 
