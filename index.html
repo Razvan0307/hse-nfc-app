@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>HSE NFC Scan</title>
 
-    <!-- PWA Manifest - FIXED -->
+    <!-- Manifest corect -->
     <link rel="manifest" href="manifest.json">
 
     <style>
@@ -33,7 +33,7 @@
             background: white;
             padding: 20px;
             border-radius: 16px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
             margin-bottom: 20px;
         }
 
@@ -59,6 +59,9 @@
         .btn-red { background: #dc2626; }
         .btn-red:hover { background: #a81e1e; }
 
+        .btn-green { background: #16a34a; }
+        .btn-green:hover { background: #12832e; }
+
         #locatie {
             color: #16a34a;
             font-weight: bold;
@@ -71,7 +74,7 @@
             margin-top: 12px;
             border-radius: 12px;
             border-left: 6px solid #1d4ed8;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.06);
         }
 
         .equip-id {
@@ -131,6 +134,8 @@
         </p>
     </div>
 
+    <button id="showExpired" class="btn btn-green">🔎 Vezi echipamente cu revizie depășită</button>
+
     <h2 style="font-size:22px; margin-top:25px; color:#333;">Echipamente scanate:</h2>
     <div id="lista"></div>
 
@@ -139,7 +144,7 @@
 
 </div>
 
-<!-- ✅ FIX: încărcarea corectă a scriptului -->
+<!-- Script corect încărcat -->
 <script src="app.js"></script>
 
 <script>
