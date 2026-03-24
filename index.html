@@ -1,128 +1,154 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HSE NFC Scan</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSE NFC Scan</title>
 
-    <!-- Manifest pentru PWA -->
-    <link rel="manifest" href="manifest.json" />
+<link rel="manifest" href="manifest.json" />
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            background: #f5f5f5;
-        }
+<style>
+    body {
+        margin: 0;
+        background: #f0f2f5;
+        font-family: "Segoe UI", Arial, sans-serif;
+    }
 
-        h2 {
-            color: #1d4ed8;
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
+    /* CONTAINER */
+    .container {
+        max-width: 600px;
+        margin: auto;
+        padding: 20px;
+    }
 
-        button {
-            padding: 14px 16px;
-            font-size: 20px;
-            margin: 12px 0;
-            width: 100%;
-            background: #1d4ed8;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
+    /* HEADER */
+    h1 {
+        text-align: center;
+        font-size: 30px;
+        color: #1d4ed8;
+        margin-bottom: 5px;
+    }
 
-        button:hover {
-            background: #144bb5;
-        }
+    /* CARD */
+    .card {
+        background: white;
+        padding: 20px;
+        border-radius: 16px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
 
-        ul {
-            padding-left: 0;
-        }
+    /* BUTOANE */
+    .btn {
+        width: 100%;
+        padding: 16px;
+        font-size: 20px;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        margin: 10px 0;
+        color: white;
+        transition: 0.2s;
+    }
 
-        #locatie {
-            font-weight: bold;
-            color: #16a34a;
-        }
+    .btn-blue { background: #1d4ed8; }
+    .btn-blue:hover { background: #1539a3; }
 
-        /* CARD DESIGN */
-        .ham-card {
-            background: #ffffff;
-            padding: 12px 16px;
-            margin: 10px 0;
-            border-radius: 10px;
-            border-left: 5px solid #1d4ed8;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
+    .btn-yellow { background: #f59e0b; }
+    .btn-yellow:hover { background: #d48806; }
 
-        .ham-id {
-            font-size: 22px;
-            font-weight: bold;
-            color: #1d4ed8;
-        }
+    .btn-red { background: #dc2626; }
+    .btn-red:hover { background: #a81e1e; }
 
-        .ham-loc {
-            font-size: 18px;
-            margin-top: 4px;
-            color: #16a34a;
-        }
+    /* TEXT */
+    #locatie {
+        color: #16a34a;
+        font-weight: bold;
+    }
 
-        .ham-time {
-            font-size: 14px;
-            color: #6b7280;
-            margin-top: 2px;
-        }
+    /* CARD PENTRU HAMURI */
+    .ham-card {
+        background: #ffffff;
+        padding: 14px;
+        margin-top: 12px;
+        border-radius: 12px;
+        border-left: 6px solid #1d4ed8;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
 
-        .ham-rev {
-            font-size: 14px;
-            color: #444;
-            margin-top: 8px;
-            background: #f3f4f6;
-            padding: 4px 8px;
-            border-radius: 6px;
-            display: inline-block;
-        }
+    .ham-id {
+        font-size: 20px;
+        font-weight: bold;
+        color: #1d4ed8;
+    }
 
-        /* Puls Animation */
-        .pulse {
-            animation: pulseAnim 1s infinite;
-        }
+    .ham-loc {
+        font-size: 18px;
+        color: #16a34a;
+        margin-top: 4px;
+    }
 
-        @keyframes pulseAnim {
-            0% { opacity: 1; }
-            50% { opacity: .4; }
-            100% { opacity: 1; }
-        }
-    </style>
+    .ham-time {
+        font-size: 15px;
+        color: #6b7280;
+    }
+
+    .ham-rev {
+        margin-top: 8px;
+        padding: 4px 8px;
+        background: #f3f4f6;
+        border-radius: 6px;
+        display: inline-block;
+        color: #444;
+    }
+
+    /* ANIMATIE PULSE */
+    .pulse {
+        animation: pulseAnim 1s infinite;
+    }
+
+    @keyframes pulseAnim {
+        0% { opacity: 1; }
+        50% { opacity: 0.4; }
+        100% { opacity: 1; }
+    }
+</style>
 
 </head>
 
 <body>
 
-    <h2>HSE NFC Scan</h2>
+<div class="container">
 
-    <p><strong>Locația Curentă:</strong> <span id="locatie">Nesetat</span></p>
+    <h1>🦺 HSE NFC Scan</h1>
 
-    <button id="scanNFC">📡 Scanează NFC</button>
+    <div class="card">
+        <p><strong>Locația curentă:</strong> <span id="locatie">Nesetat</span></p>
 
-    <p id="scanStatus" style="font-size:18px; font-weight:bold; color:#1d4ed8; display:none;">
-        📡 Apropie telefonul de tag…
-    </p>
+        <button id="scanNFC" class="btn btn-blue">📡 Scanează NFC</button>
 
-    <h3>Hamuri scanate:</h3>
+        <p id="scanStatus"
+           style="display:none; text-align:center; font-weight:bold; color:#1d4ed8;"
+           class="pulse">
+            Apropie telefonul de tag…
+        </p>
+    </div>
+
+    <h2>Hamuri scanate:</h2>
     <div id="lista"></div>
 
-    <button id="exportCSV">📁 Exportă în Excel (CSV)</button>
-    <button id="clearData" style="background:#dc2626">🗑️ Șterge date</button>
+    <button id="exportCSV" class="btn btn-yellow">📁 Exportă în Excel (CSV)</button>
+    <button id="clearData" class="btn btn-red">🗑️ Șterge date</button>
 
-    <script src="app.js"></script>
+</div>
 
-    <script>
-        if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.register("service-worker.js");
-        }
-    </script>
+<script src="app.js"></script>
+
+<script>
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("service-worker.js");
+}
+</script>
 
 </body>
 </html>
