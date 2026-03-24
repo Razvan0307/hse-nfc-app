@@ -176,16 +176,17 @@ async function saveToSupabase(entry) {
   }).then(r => r.json());
 
   // UPDATE
-  if (existing.length > 0) {
-    await fetch(`${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}`, {
-      method: "PATCH",
-      headers: {
-        apikey: SUPABASE_KEY,
-        Authorization: `Bearer ${SUPABASE_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(entry)
-    });
+  
+await fetch(`${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}`, {
+  method: "PATCH",
+  headers: {
+    apikey: SUPABASE_KEY,
+    Authorization: `Bearer ${SUPABASE_KEY}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify(entry)
+});
+
   }
 
   // INSERT
