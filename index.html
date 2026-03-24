@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>HSE NFC Scan</title>
 
+    <!-- Manifest pentru PWA -->
     <link rel="manifest" href="manifest.json" />
 
     <style>
@@ -13,31 +14,85 @@
             padding: 20px;
             background: #f5f5f5;
         }
+
         h2 {
             color: #1d4ed8;
+            font-size: 28px;
+            margin-bottom: 10px;
         }
+
         button {
-            padding: 12px 16px;
-            font-size: 18px;
-            margin: 10px 0;
+            padding: 14px 16px;
+            font-size: 20px;
+            margin: 12px 0;
             width: 100%;
             background: #1d4ed8;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
+            cursor: pointer;
         }
+
+        button:hover {
+            background: #144bb5;
+        }
+
         ul {
-            padding-left: 20px;
+            padding-left: 0;
         }
-        li {
-            margin: 5px 0;
-            background: #ffffff;
-            padding: 8px 12px;
-            border-radius: 4px;
-        }
+
         #locatie {
             font-weight: bold;
             color: #16a34a;
+        }
+
+        /* CARD DESIGN */
+        .ham-card {
+            background: #ffffff;
+            padding: 12px 16px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 5px solid #1d4ed8;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .ham-id {
+            font-size: 22px;
+            font-weight: bold;
+            color: #1d4ed8;
+        }
+
+        .ham-loc {
+            font-size: 18px;
+            margin-top: 4px;
+            color: #16a34a;
+        }
+
+        .ham-time {
+            font-size: 14px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+
+        .ham-rev {
+            font-size: 14px;
+            color: #444;
+            margin-top: 8px;
+            background: #f3f4f6;
+            padding: 4px 8px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        /* Puls Animation */
+        .pulse {
+            animation: pulseAnim 1s infinite;
+        }
+
+        @keyframes pulseAnim {
+            0% { opacity: 1; }
+            50% { opacity: .4; }
+            100% { opacity: 1; }
         }
     </style>
 
@@ -51,8 +106,12 @@
 
     <button id="scanNFC">📡 Scanează NFC</button>
 
+    <p id="scanStatus" style="font-size:18px; font-weight:bold; color:#1d4ed8; display:none;">
+        📡 Apropie telefonul de tag…
+    </p>
+
     <h3>Hamuri scanate:</h3>
-    <ul id="lista"></ul>
+    <div id="lista"></div>
 
     <button id="exportCSV">📁 Exportă în Excel (CSV)</button>
     <button id="clearData" style="background:#dc2626">🗑️ Șterge date</button>
