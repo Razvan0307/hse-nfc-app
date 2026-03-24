@@ -1,254 +1,130 @@
-//--------------------------------------------------
-// CONFIG SUPABASE
-//--------------------------------------------------
-const SUPABASE_URL = "https://rrtyjtbcxgacldniuybn.supabase.co";
-const SUPABASE_KEY = "sb_publishable_BgWYudD6xuJbxRuZHt3mHg_35f1e6j6";
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HSE NFC Scan</title>
 
-//--------------------------------------------------
-// VARIABILE
-//--------------------------------------------------
-let currentLocation = "Nesetat";
-let lastScanTime = 0;
-let isScanning = false;
-let controller = null;
+    <!-- Manifest corect (acum nu mai apare pe ecran) -->
+    <link rel="manifest" href="manifest.json">
 
-//--------------------------------------------------
-// ICONS PE TIP
-//--------------------------------------------------
-function iconForType(tip) {
-  switch (tip) {
-    case "ham": return "🦺";
-    case "vesta": return "🧥";
-    case "stingator": return "🔥";
-    case "kit": return "⛑️";
-    default: return "🧰";
-  }
-}
+    <style>
+        body {
+            margin: 0;
+            background: #f0f2f5;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
 
-//--------------------------------------------------
-// DETECTARE TIP
-//--------------------------------------------------
-function detectTip(id) {
-  if (id.startsWith("HAM_")) return "ham";
-  if (id.startsWith("VESTA_")) return "vesta";
-  if (id.startsWith("STING_")) return "stingator";
-  if (id.startsWith("KIT_")) return "kit";
-  return "necunoscut";
-}
+        .container {
+            max-width: 650px;
+            margin: auto;
+            padding: 20px;
+        }
 
-//--------------------------------------------------
-// SCAN NFC
-//--------------------------------------------------
-async function scanNFC() {
-  if (isScanning) return;
+        h1 {
+            text-align: center;
+            font-size: 32px;
+            color: #1d4ed8;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
 
-  isScanning = true;
-  document.getElementById("scanStatus").style.display = "block";
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
 
-  try {
-    controller = new AbortController();
-    const reader = new NDEFReader();
+        .btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 20px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            margin: 10px 0;
+            color: white;
+            font-weight: 600;
+            transition: 0.2s;
+        }
 
-    await reader.scan({ signal: controller.signal, keepSessionAlive: true });
+        .btn-blue { background: #1d4ed8; }
+        .btn-blue:hover { background: #1539a3; }
 
-    reader.onreading = async (ev) => {
-      ev.preventDefault();
+        .btn-yellow { background: #f59e0b; }
+        .btn-yellow:hover { background: #d48806; }
 
-      const now = Date.now();
-      if (now - lastScanTime < 1500) return;
-      lastScanTime = now;
+        .btn-red { background: #dc2626; }
+        .btn-red:hover { background: #a81e1e; }
 
-      const raw = new TextDecoder().decode(ev.message.records[0].data).trim();
+        .btn-green { background: #16a34a; }
+        .btn-green:hover { background: #12832e; }
 
-      // ----------------------- Locație -----------------------
-      if (raw.startsWith("LOC_")) {
-        currentLocation = raw.replace("LOC_", "");
-        document.getElementById("locatie").textContent = currentLocation;
-        alert("✅ Locație setată: " + currentLocation);
-        finishScan();
-        return;
-      }
+        #locatie {
+            color: #16a34a;
+            font-weight: bold;
+            font-size: 18px;
+        }
 
-      // ----------------------- Echipament ----------------------
-      const id = raw;
-      const tip = detectTip(id);
-      if (tip === "necunoscut") { alert("Tag necunoscut!"); finishScan(); return; }
+        .equip-card {
+            background: #ffffff;
+            padding: 14px;
+            margin-top: 12px;
+            border-radius: 12px;
+            border-left: 6px solid #1d4ed8;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+        }
 
-      const idDisplay = id.replace(/^\w+_/, "");
-      const timestamp = new Date().toLocaleString("ro-RO");
+        .pulse {
+            animation: pulseAnim 1s infinite;
+        }
 
-      // verificam DB
-      const checkUrl = `${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${id}&select=*`;
+        @keyframes pulseAnim {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
 
-      const existing = await fetch(checkUrl, {
-        headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
-      }).then(r => r.json());
+<body>
 
-      // ------------ Stare conform / neconform --------------
-      const conform = confirm("Echipamentul este conform?\nOK = Conform\nCANCEL = Neconform");
-      const stare = conform ? "conform" : "neconform";
+<div class="container">
 
-      let dataRevizie = "";
-      let predat = "";
+    <h1>🦺 HSE NFC Scan</h1>
 
-      // Dacă nu e conform → cerem revizie + persoană
-      if (!conform) {
-        dataRevizie = prompt("Introduceți data ultimei revizii:");
-        if (!dataRevizie) dataRevizie = "Nespecificat";
+    <div class="card">
+        <p><strong>Locația curentă:</strong> <span id="locatie">Nesetat</span></p>
 
-        predat = prompt("Cine a preluat echipamentul?");
-        if (!predat) predat = "Nespecificat";
-      }
-      // Dacă e conform dar nu există în DB → cerem revizie
-      else if (existing.length === 0) {
-        dataRevizie = prompt("Echipament nou. Introduceți data ultimei revizii:");
-        if (!dataRevizie) dataRevizie = "Nespecificat";
-      }
-      // Dacă există și e conform → folosim revizia din DB
-      else {
-        dataRevizie = existing[0].data_revizie;
-        predat = existing[0].predat_catre ?? "";
-      }
+        <button id="scanNFC" class="btn btn-blue">📡 Scanează NFC</button>
 
-      // ENTRY FINAL
-      const entry = {
-        id_echipament: id,
-        tip,
-        locatie: currentLocation,
-        stare,
-        predat_catre: predat,
-        data_scan: timestamp,
-        data_revizie: dataRevizie,
-        observatii: ""
-      };
-
-      await saveToSupabase(entry);
-      addCard({ ...entry, idDisplay });
-
-      finishScan();
-    };
-
-  } catch (err) {
-    alert("Eroare NFC: " + err);
-    finishScan();
-  }
-}
-
-//--------------------------------------------------
-function finishScan() {
-  isScanning = false;
-  document.getElementById("scanStatus").style.display = "none";
-  if (controller) controller.abort();
-}
-//--------------------------------------------------
-
-// SAVE / UPDATE IN SUPABASE
-//--------------------------------------------------
-async function saveToSupabase(entry) {
-  const checkUrl = `${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}&select=*`;
-
-  const existing = await fetch(checkUrl, {
-    headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
-  }).then(r => r.json());
-
-  if (existing.length > 0) {
-    await fetch(`${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}`, {
-      method: "PATCH",
-      headers: {
-        apikey: SUPABASE_KEY,
-        Authorization: `Bearer ${SUPABASE_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(entry)
-    });
-  } else {
-    await fetch(`${SUPABASE_URL}/rest/v1/echipamente`, {
-      method: "POST",
-      headers: {
-        apikey: SUPABASE_KEY,
-        Authorization: `Bearer ${SUPABASE_KEY}`,
-        "Content-Type": "application/json",
-        Prefer: "return=representation"
-      },
-      body: JSON.stringify(entry)
-    });
-  }
-}
-
-//--------------------------------------------------
-// CALCUL 12 LUNI
-//--------------------------------------------------
-function isOlderThan12Months(dateString) {
-  if (!dateString || dateString === "Nespecificat") return false;
-  const [dd, mm, yyyy] = dateString.split(".");
-  const d = new Date(`${yyyy}-${mm}-${dd}`);
-  const diff = Date.now() - d.getTime();
-  return diff / (1000 * 60 * 60 * 24 * 30.5) > 12;
-}
-
-//--------------------------------------------------
-// Afișare card
-//--------------------------------------------------
-function addCard(entry) {
-  const lista = document.getElementById("lista");
-  const icon = iconForType(entry.tip);
-
-  const overdue = isOlderThan12Months(entry.data_revizie);
-
-  const card = document.createElement("div");
-  card.className = "equip-card";
-  if (entry.stare === "neconform") card.style.borderLeftColor = "red";
-
-  card.innerHTML = `
-    <div class="equip-id">${icon} ${entry.idDisplay} (${entry.tip})</div>
-    <div class="equip-loc">📍 ${entry.locatie}</div>
-    <div class="equip-time">⏱ ${entry.data_scan}</div>
-    <div class="equip-status" style="color:${entry.stare === "neconform" ? "red" : "green"}">
-      Stare: ${entry.stare}
+        <p id="scanStatus"
+           style="display:none; text-align:center; font-weight:bold; color:#1d4ed8; font-size:18px;"
+           class="pulse">
+            🔎 Apropie telefonul de tag...
+        </p>
     </div>
-    <div class="equip-status" style="${overdue ? "color:red; font-weight:bold" : ""}">
-      📅 Revizie: ${entry.data_revizie}
-    </div>
-    ${entry.predat_catre ? `<div class="equip-status">👤 Predat: ${entry.predat_catre}</div>` : ""}
-  `;
 
-  lista.prepend(card);
+    <button id="showExpired" class="btn btn-green">🔎 Echipamente cu revizie depășită</button>
+
+    <h2 style="font-size:22px; margin-top:25px; color:#333;">Echipamente scanate:</h2>
+    <div id="lista"></div>
+
+    <button id="exportCSV" class="btn btn-yellow">📁 Exportă în Excel (CSV)</button>
+    <button id="clearData" class="btn btn-red">🗑️ Șterge afișarea locală</button>
+
+</div>
+
+<!-- Script adevărat, corect, care NU se afișează pe ecran -->
+<script src="app.js"></script>
+
+<script>
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("service-worker.js");
 }
+</script>
 
-//--------------------------------------------------
-// BUTON: VIZUALIZEAZĂ DOAR ECHIPAMENTE CU REVIZIE DEPĂȘITĂ
-//--------------------------------------------------
-document.getElementById("showExpired").addEventListener("click", () => {
-  const cards = document.querySelectorAll(".equip-card");
-  cards.forEach(card => {
-    const rev = card.innerText.match(/Revizie: (.*)/)?.[1] || "";
-    card.style.display = isOlderThan12Months(rev) ? "block" : "none";
-  });
-});
-
-//--------------------------------------------------
-// Export CSV
-//--------------------------------------------------
-function exportCSV() {
-  let csv = "ID,Tip,Locatie,Stare,PredatCatre,DataScan,Revizie\n";
-
-  document.querySelectorAll(".equip-card").forEach(card => {
-    const lines = card.innerText.split("\n");
-
-    const id = lines[0].replace(/^[^\s]+\s/, "");
-    const loc = lines[1].replace("📍 ", "");
-    const time = lines[2].replace("⏱ ", "");
-    const stare = lines[3].replace("Stare: ", "");
-    const rev = lines[4].replace("📅 Revizie: ", "");
-    const pred = lines[5] ? lines[5].replace("👤 Predat: ", "") : "";
-
-    csv += `${id},,,${loc},${stare},${pred},${time},${rev}\n`;
-  });
-
-  const blob = new Blob([csv], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "echipamente_export.csv";
-  a.click();
-}
+</body>
+</html>
