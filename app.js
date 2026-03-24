@@ -19,27 +19,65 @@ let isScanning = false;
 // -----------------------------------------------------
 async function saveToSupabase(entry) {
     try {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/hamuri`, {
-            method: "POST",
+        // 1️⃣ Căutăm dacă hamul există deja
+        const checkUrl = `${SUPABASE_URL}/rest/v1/hamuri?id_ham=eq.${entry.ID_HAM}&select=*`;
+        const existing = await fetch(checkUrl, {
             headers: {
                 "apikey": SUPABASE_KEY,
-                "Authorization": `Bearer ${SUPABASE_KEY}`,
-                "Content-Type": "application/json",
-                "Prefer": "return=representation"
-            },
-            body: JSON.stringify({
-                id_ham: entry.ID_HAM,
-                locatie: entry.Locație,
-                dataora: entry.DataOra,
-                datarevizie: entry.DataRevizie
-            })
-        });
+                "Authorization": `Bearer ${SUPABASE_KEY}`
+            }
+        }).then(r => r.json());
 
-        const data = await response.json();
-        console.log("✔ Trimis către Supabase:", data);
+        console.log("🔎 Rezultat căutare:", existing);
+
+        // 2️⃣ Dacă există → UPDATE
+        if (existing.length > 0) {
+            console.log("♻️ Exista → UPDATE");
+
+            const updateUrl = `${SUPABASE_URL}/rest/v1/hamuri?id_ham=eq.${entry.ID_HAM}`;
+
+            await fetch(updateUrl, {
+                method: "PATCH",
+                headers: {
+                    "apikey": SUPABASE_KEY,
+                    "Authorization": `Bearer ${SUPABASE_KEY}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    locatie: entry.Locație,
+                    dataora: entry.DataOra,
+                    datarevizie: entry.DataRevizie
+                })
+            });
+
+            alert(`♻️ Hamul ${entry.ID_HAM} a fost actualizat.`);
+        }
+
+        // 3️⃣ Dacă NU există → INSERT
+        else {
+            console.log("🆕 Nu există → INSERT");
+
+            await fetch(`${SUPABASE_URL}/rest/v1/hamuri`, {
+                method: "POST",
+                headers: {
+                    "apikey": SUPABASE_KEY,
+                    "Authorization": `Bearer ${SUPABASE_KEY}`,
+                    "Content-Type": "application/json",
+                    "Prefer": "return=representation"
+                },
+                body: JSON.stringify({
+                    id_ham: entry.ID_HAM,
+                    locatie: entry.Locație,
+                    dataora: entry.DataOra,
+                    datarevizie: entry.DataRevizie
+                })
+            });
+
+            alert(`✅ Hamul ${entry.ID_HAM} a fost adăugat.`);
+        }
 
     } catch (err) {
-        console.error("❌ Eroare trimitere Supabase:", err);
+        console.error("❌ Eroare Supabase:", err);
     }
 }
 
