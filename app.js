@@ -2,8 +2,7 @@
 // CONFIG SUPABASE
 //--------------------------------------------------
 const SUPABASE_URL = "https://rrtyjtbcxgacldniuybn.supabase.co";
-const SUPABASE_KEY =
-  "sb_publishable_BgWYudD6xuJbxRuZHt3mHg_35f1e6j6";
+const SUPABASE_KEY = "sb_publishable_BgWYudD6xuJbxRuZHt3mHg_35f1e6j6";
 
 //--------------------------------------------------
 // VARIABILE
@@ -51,15 +50,17 @@ async function scanNFC() {
       const controller = new AbortController();
       const reader = new NDEFReader();
 
-      await reader.scan({ signal: controller.signal, keepSessionAlive: true });
+      await reader.scan({
+        signal: controller.signal,
+        keepSessionAlive: true
+      });
 
       reader.onreadingerror = () => {
-        console.warn("Eroare la citire NFC.");
+        console.warn("Eroare la citire NFC");
       };
 
       reader.onreading = async (event) => {
-        event.preventDefault(); // ✅ oprește fereastra "New Tag Scanned"
-
+        event.preventDefault(); // ✅ STOP popup sistemic
         const now = Date.now();
         if (now - lastScanTime < 2000) return;
         lastScanTime = now;
@@ -67,14 +68,18 @@ async function scanNFC() {
         const record = event.message.records[0];
         const rawText = new TextDecoder().decode(record.data).trim();
 
-        // ✅ Dacă este locație
+        //---------------------------
+        // SETARE LOCAȚIE
+        //---------------------------
         if (rawText.startsWith("LOC_")) {
           currentLocation = rawText.replace("LOC_", "");
           document.getElementById("locatie").textContent = currentLocation;
           alert("✅ Locație setată: " + currentLocation);
         }
 
-        // ✅ Dacă este echipament
+        //---------------------------
+        // ECHIPAMENT
+        //---------------------------
         else {
           const id = rawText;
           const tip = detectTip(id);
@@ -84,29 +89,29 @@ async function scanNFC() {
             return;
           }
 
-          const idDisplay = id.replace(/^\w+_/, ""); // ✅ elimină prefixul (HAM_, STING_, etc.)
-
+          const idDisplay = id.replace(/^\w+_/, "");
           const timestamp = new Date().toLocaleString("ro-RO");
 
-          // ✅ POP-UP: CONFORM
-          const conform = confirm("Echipamentul este conform?\nOK = Conform\nCancel = Neconform");
+          // ✅ POP-UP: conform / neconform
+          const conform = confirm("Echipamentul este conform?\nOK = Conform\nCANCEL = Neconform");
           const stare = conform ? "conform" : "neconform";
 
+          // ✅ dacă neconform → persoana care preia
           let predat = "";
           if (!conform) {
             predat = prompt("Cine a preluat echipamentul pentru verificare?");
             if (!predat) predat = "Nespecificat";
           }
 
-          // ✅ POP-UP: DATA REVIZIE
+          // ✅ DATA REVIZIE
           let dataRevizie = prompt("Introduceți data ultimei revizii (ex: 10.01.2026):");
           if (!dataRevizie) dataRevizie = "Nespecificat";
 
-          // ✅ POP-UP: DATA EXPIRARE
+          // ✅ DATA EXPIRARE
           let expira = prompt("Introduceți data expirării (ex: 31.12.2026):");
           if (!expira) expira = "Nespecificat";
 
-          // ✅ CREARE ENTRY
+          // ✅ ENTRY FINAL
           const entry = {
             id_echipament: id,
             tip: tip,
@@ -120,7 +125,6 @@ async function scanNFC() {
           };
 
           await saveToSupabase(entry);
-
           addCard({ ...entry, idDisplay });
         }
 
@@ -138,18 +142,21 @@ async function scanNFC() {
 }
 
 //--------------------------------------------------
-// FUNCTIE: SAVE / UPDATE SUPABASE
+// SAVE / UPDATE SUPABASE
 //--------------------------------------------------
 async function saveToSupabase(entry) {
   try {
     const checkUrl = `${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}&select=*`;
 
     const existing = await fetch(checkUrl, {
-      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`
+      }
     }).then((r) => r.json());
 
     if (existing.length > 0) {
-      // ✅ UPDATE
+      // UPDATE
       await fetch(`${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}`, {
         method: "PATCH",
         headers: {
@@ -160,9 +167,9 @@ async function saveToSupabase(entry) {
         body: JSON.stringify(entry)
       });
 
-      alert(`♻️ Echipament ${entry.id_echipament} actualizat.`);
+      alert(`♻️ Actualizat: ${entry.id_echipament}`);
     } else {
-      // ✅ INSERT
+      // INSERT
       await fetch(`${SUPABASE_URL}/rest/v1/echipamente`, {
         method: "POST",
         headers: {
@@ -174,7 +181,7 @@ async function saveToSupabase(entry) {
         body: JSON.stringify(entry)
       });
 
-      alert(`✅ Echipament ${entry.id_echipament} adăugat.`);
+      alert(`✅ Adăugat: ${entry.id_echipament}`);
     }
   } catch (err) {
     console.error("❌ Eroare Supabase:", err);
@@ -182,7 +189,7 @@ async function saveToSupabase(entry) {
 }
 
 //--------------------------------------------------
-// FUNCTIE: ADAUGA CARD IN UI
+// AFIȘARE CARD
 //--------------------------------------------------
 function addCard(entry) {
   const lista = document.getElementById("lista");
@@ -197,7 +204,7 @@ function addCard(entry) {
     <div class="equip-status">✅ Stare: ${entry.stare}</div>
     <div class="equip-status">📅 Revizie: ${entry.data_revizie}</div>
     <div class="equip-status">📅 Expiră: ${entry.data_expirare}</div>
-    ${entry.predat_catre !== "" ? `<div class="equip-status">👤 Predat către: ${entry.predat_catre}</div>` : ""}
+    ${entry.predat_catre ? `<div class="equip-status">👤 Predat către: ${entry.predat_catre}</div>` : ""}
   `;
 
   lista.prepend(card);
