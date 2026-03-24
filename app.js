@@ -176,8 +176,8 @@ async function saveToSupabase(entry) {
   }).then(r => r.json());
 
   // UPDATE
-  
-await fetch(`${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}`, {
+  if (existing.length > 0) {
+    await fetch(`${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}`, {
       method: "PATCH",
       headers: {
         apikey: SUPABASE_KEY,
@@ -186,7 +186,6 @@ await fetch(`${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_ech
       },
       body: JSON.stringify(entry)
     });
-
   }
 
   // INSERT
