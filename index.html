@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>HSE NFC Scan</title>
 
-    <!-- Manifest corect -->
+    <!-- Manifest corect (acum nu mai apare pe ecran) -->
     <link rel="manifest" href="manifest.json">
 
     <style>
@@ -77,33 +77,6 @@
             box-shadow: 0 3px 10px rgba(0,0,0,0.06);
         }
 
-        .equip-id {
-            font-size: 22px;
-            font-weight: bold;
-            color: #1d4ed8;
-        }
-
-        .equip-loc {
-            font-size: 19px;
-            color: #16a34a;
-            margin-top: 4px;
-        }
-
-        .equip-time {
-            font-size: 15px;
-            color: #6b7280;
-        }
-
-        .equip-status {
-            margin-top: 8px;
-            padding: 4px 8px;
-            background: #f3f4f6;
-            border-radius: 6px;
-            display: inline-block;
-            color: #444;
-            font-size: 15px;
-        }
-
         .pulse {
             animation: pulseAnim 1s infinite;
         }
@@ -134,7 +107,7 @@
         </p>
     </div>
 
-    <button id="showExpired" class="btn btn-green">🔎 Vezi echipamente cu revizie depășită</button>
+    <button id="showExpired" class="btn btn-green">🔎 Echipamente cu revizie depășită</button>
 
     <h2 style="font-size:22px; margin-top:25px; color:#333;">Echipamente scanate:</h2>
     <div id="lista"></div>
@@ -144,7 +117,7 @@
 
 </div>
 
-<!-- Script corect încărcat -->
+<!-- Script adevărat, corect, care NU se afișează pe ecran -->
 <script src="app.js"></script>
 
 <script>
