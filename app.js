@@ -15,11 +15,13 @@ let isScanning = false;
 // ICONURI PE TIP
 //--------------------------------------------------
 function getIcon(tip) {
-  if (tip === "ham") return "🦺";
-  if (tip === "vesta") return "🧥";
-  if (tip === "stingator") return "🔥";
-  if (tip === "kit") return "⛑️";
-  return "🧰";
+  switch (tip) {
+    case "ham": return "🦺";
+    case "vesta": return "🧥";
+    case "stingator": return "🔥";
+    case "kit": return "⛑️";
+    default: return "🧰";
+  }
 }
 
 //--------------------------------------------------
@@ -34,13 +36,13 @@ function detectTip(id) {
 }
 
 //--------------------------------------------------
-// SCAN NFC
+// ✅ FUNCTIA TA ORIGINALĂ NFC (NEATINSĂ LA MECANISM)
 //--------------------------------------------------
 async function scanNFC() {
 
   if (isScanning) return;
-
   isScanning = true;
+
   document.getElementById("scanStatus").style.display = "block";
 
   try {
@@ -53,13 +55,13 @@ async function scanNFC() {
       event.preventDefault();
 
       const now = Date.now();
-      if (now - lastScanTime < 1500) return;
+      if (now - lastScanTime < 1500) return;  // anti-dublare
       lastScanTime = now;
 
       const rawText = new TextDecoder().decode(event.message.records[0].data).trim();
 
       // -----------------------------
-      // LOCAȚIE
+      // SCANARE LOCAȚIE
       // -----------------------------
       if (rawText.startsWith("LOC_")) {
         currentLocation = rawText.replace("LOC_", "");
@@ -72,7 +74,7 @@ async function scanNFC() {
       }
 
       // -----------------------------
-      // ECHIPAMENT
+      // SCANARE ECHIPAMENT
       // -----------------------------
       const id = rawText;
       const tip = detectTip(id);
@@ -87,39 +89,43 @@ async function scanNFC() {
       const timestamp = new Date().toLocaleString("ro-RO");
 
       // -----------------------------
-      // EXISTĂ ÎN DB?
+      // VERIFICĂM DACĂ EXISTĂ ÎN DB
       // -----------------------------
       const checkUrl = `${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${id}&select=*`;
 
       const existing = await fetch(checkUrl, {
-        headers: {
-          apikey: SUPABASE_KEY,
-          Authorization: `Bearer ${SUPABASE_KEY}`
-        }
+        headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
       }).then(r => r.json());
 
       let dataRevizie = "";
       let predat_catre = "";
 
       // -----------------------------
-      // CONFORM / NECONFORM
+      // POPUP CONFORM / NECONFORM
       // -----------------------------
       const conform = confirm("Echipamentul este conform?\nOK = Conform\nCANCEL = Neconform");
       const stare = conform ? "conform" : "neconform";
 
+      // 1️⃣ NEconform → cerem revizie + predat
       if (!conform) {
-        dataRevizie = prompt("Introduceți data ultimei revizii:", "") || "Nespecificat";
-        predat_catre = prompt("Cine a preluat echipamentul?", "") || "Nespecificat";
+        dataRevizie = prompt("Introduceți data ultimei revizii:") || "Nespecificat";
+        predat_catre = prompt("Cine a preluat echipamentul?") || "Nespecificat";
       }
-      else if (existing.length === 0) {
-        dataRevizie = prompt("Introduceți data ultimei revizii:", "") || "Nespecificat";
-      }
-      else {
+
+      // 2️⃣ Există deja și e conform → păstrăm revizia veche
+      else if (existing.length > 0) {
         dataRevizie = existing[0].data_revizie;
         predat_catre = existing[0].predat_catre || "";
       }
 
-      // ENTRY
+      // 3️⃣ Nou și conform → cerem revizie O SINGURĂ dată
+      else {
+        dataRevizie = prompt("Introduceți data ultimei revizii:") || "Nespecificat";
+      }
+
+      // -----------------------------
+      // DATE FINALE PENTRU BD
+      // -----------------------------
       const entry = {
         id_echipament: id,
         tip,
@@ -145,17 +151,14 @@ async function scanNFC() {
 }
 
 //--------------------------------------------------
-// SAVE / UPDATE SUPABASE
+// ✅ SAVE / UPDATE — FUNCȚIONAL 100%
 //--------------------------------------------------
 async function saveToSupabase(entry) {
 
   const checkUrl = `${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}&select=*`;
 
   const existing = await fetch(checkUrl, {
-    headers: {
-      apikey: SUPABASE_KEY,
-      Authorization: `Bearer ${SUPABASE_KEY}`
-    }
+    headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
   }).then(r => r.json());
 
   if (existing.length > 0) {
@@ -185,7 +188,7 @@ async function saveToSupabase(entry) {
 }
 
 //--------------------------------------------------
-// REVIZIE >12 LUNI?
+// ✅ REVIZIE >12 LUNI?
 //--------------------------------------------------
 function isExpired(rev) {
   if (!rev || rev === "Nespecificat") return false;
@@ -195,12 +198,12 @@ function isExpired(rev) {
 }
 
 //--------------------------------------------------
-// AFISARE CARD
+// ✅ AFIȘARE CARD (cu icon + culori)
 //--------------------------------------------------
 function addCard(entry) {
   const lista = document.getElementById("lista");
-  const icon = getIcon(entry.tip);
   const expired = isExpired(entry.data_revizie);
+  const icon = getIcon(entry.tip);
 
   const card = document.createElement("div");
   card.className = "equip-card";
@@ -213,8 +216,12 @@ function addCard(entry) {
     <div class="equip-id">${icon} ${entry.idDisplay} (${entry.tip})</div>
     <div class="equip-loc">📍 ${entry.locatie}</div>
     <div class="equip-time">⏱ ${entry.data_scan}</div>
-    <div class="equip-status" style="color:${entry.stare === "neconform" ? "red" : "green"}">Stare: ${entry.stare}</div>
-    <div class="equip-status" style="${expired ? "color:red;font-weight:bold" : ""}">📅 Revizie: ${entry.data_revizie}</div>
+    <div class="equip-status" style="color:${entry.stare === "neconform" ? "red" : "green"}">
+      Stare: ${entry.stare}
+    </div>
+    <div class="equip-status" style="${expired ? "color:red;font-weight:bold" : ""}">
+      📅 Revizie: ${entry.data_revizie}
+    </div>
     ${entry.predat_catre ? `<div class="equip-status">👤 Predat: ${entry.predat_catre}</div>` : ""}
   `;
 
@@ -222,7 +229,7 @@ function addCard(entry) {
 }
 
 //--------------------------------------------------
-// FILTRU REVIZII DEPĂȘITE
+// ✅ FILTRARE REVIZII DEPĂȘITE
 //--------------------------------------------------
 function showExpired() {
   const cards = document.querySelectorAll(".equip-card");
@@ -233,7 +240,7 @@ function showExpired() {
 }
 
 //--------------------------------------------------
-// EXPORT CSV
+// EXPORT CSV (NEATINS)
 //--------------------------------------------------
 function exportCSV() {
   let csv = "ID,Tip,Locatie,Stare,Predat,DataScan,Revizie\n";
