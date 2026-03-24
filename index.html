@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>HSE NFC Scan</title>
 
-    <!-- Manifest corect -->
+    <!-- PWA Manifest - FIXED -->
     <link rel="manifest" href="manifest.json">
 
     <style>
@@ -25,7 +25,7 @@
             text-align: center;
             font-size: 32px;
             color: #1d4ed8;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             font-weight: 700;
         }
 
@@ -33,7 +33,7 @@
             background: white;
             padding: 20px;
             border-radius: 16px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             margin-bottom: 20px;
         }
 
@@ -59,9 +59,6 @@
         .btn-red { background: #dc2626; }
         .btn-red:hover { background: #a81e1e; }
 
-        .btn-green { background: #16a34a; }
-        .btn-green:hover { background: #12832e; }
-
         #locatie {
             color: #16a34a;
             font-weight: bold;
@@ -69,7 +66,7 @@
         }
 
         .equip-card {
-            background: white;
+            background: #ffffff;
             padding: 14px;
             margin-top: 12px;
             border-radius: 12px;
@@ -95,7 +92,7 @@
         }
 
         .equip-status {
-            margin-top: 6px;
+            margin-top: 8px;
             padding: 4px 8px;
             background: #f3f4f6;
             border-radius: 6px;
@@ -114,7 +111,6 @@
             100% { opacity: 1; }
         }
     </style>
-
 </head>
 
 <body>
@@ -135,9 +131,6 @@
         </p>
     </div>
 
-    <!-- ✅ Buton special pentru revizii depășite -->
-    <button id="showExpired" class="btn btn-green">🔎 Vezi echipamente cu revizie depășită</button>
-
     <h2 style="font-size:22px; margin-top:25px; color:#333;">Echipamente scanate:</h2>
     <div id="lista"></div>
 
@@ -146,7 +139,7 @@
 
 </div>
 
-<!-- Script corect -->
+<!-- ✅ FIX: încărcarea corectă a scriptului -->
 <script src="app.js"></script>
 
 <script>
