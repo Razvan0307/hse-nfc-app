@@ -65,6 +65,7 @@ async function scanNFC() {
           document.getElementById("locatie").textContent = currentLocation;
           alert("✅ Locație setată: " + currentLocation);
         }
+
         // ECHIPAMENT
         else {
           const id = text.trim();
@@ -77,10 +78,8 @@ async function scanNFC() {
 
           const timestamp = new Date().toLocaleString("ro-RO");
 
-          // POP‑UP: CONFORM / NECONFORM
-          const conform = confirm(
-            "Echipamentul este conform?\nOK = Conform\nCancel = Neconform"
-          );
+          // ✅ POP-UP: CONFORM / NECONFORM
+          const conform = confirm("Echipamentul este conform?\nOK = Conform\nCancel = Neconform");
           const stare = conform ? "conform" : "neconform";
 
           let predat = "";
@@ -89,11 +88,15 @@ async function scanNFC() {
             if (!predat) predat = "Nespecificat";
           }
 
-          // POP-UP: DATA EXPIRARE
+          // ✅ POP-UP: DATA ULTIMEI REVIZII (NOU)
+          let dataRevizie = prompt("Introduceți data ultimei revizii (ex: 10.01.2026):");
+          if (!dataRevizie) dataRevizie = "Nespecificat";
+
+          // ✅ POP-UP: DATA EXPIRARE
           let expira = prompt("Introduceți data de expirare (ex: 31.12.2026):");
           if (!expira) expira = "Nespecificat";
 
-          // CREAZA ENTRY
+          // ✅ CREAZA ENTRY COMPLET
           const entry = {
             id_echipament: id,
             tip: tip,
@@ -102,13 +105,14 @@ async function scanNFC() {
             predat_catre: predat,
             data_scan: timestamp,
             data_expirare: expira,
+            data_revizie: dataRevizie,
             observatii: ""
           };
 
-          // Salvare in SUPABASE
+          // ✅ Salvare in SUPABASE
           await saveToSupabase(entry);
 
-          // Afișare în UI
+          // ✅ Afișare în UI
           addCard(entry);
         }
 
@@ -130,7 +134,7 @@ async function scanNFC() {
 //--------------------------------------------------
 async function saveToSupabase(entry) {
   try {
-    // 1️⃣ Căutăm dacă există deja
+    // ✅ 1. CĂUTĂM DACA EXISTĂ
     const checkUrl = `${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}&select=*`;
 
     const existing = await fetch(checkUrl, {
@@ -140,24 +144,22 @@ async function saveToSupabase(entry) {
       }
     }).then((r) => r.json());
 
-    // 2️⃣ UPDATE
+    // ✅ 2. UPDATE
     if (existing.length > 0) {
-      await fetch(
-        `${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}`,
-        {
-          method: "PATCH",
-          headers: {
-            apikey: SUPABASE_KEY,
-            Authorization: `Bearer ${SUPABASE_KEY}`,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(entry)
-        }
-      );
+      await fetch(`${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}`, {
+        method: "PATCH",
+        headers: {
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${SUPABASE_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(entry)
+      });
 
       alert(`♻️ Echipament ${entry.id_echipament} actualizat.`);
     }
-    // 3️⃣ INSERT
+
+    // ✅ 3. INSERT
     else {
       await fetch(`${SUPABASE_URL}/rest/v1/echipamente`, {
         method: "POST",
@@ -184,15 +186,16 @@ function addCard(entry) {
   const lista = document.getElementById("lista");
 
   const card = document.createElement("div");
-  card.className = "ham-card";
+  card.className = "equip-card";
 
   card.innerHTML = `
-    <div class="ham-id">🧰 ${entry.id_echipament} (${entry.tip})</div>
-    <div class="ham-loc">📍 ${entry.locatie}</div>
-    <div class="ham-time">⏱ ${entry.data_scan}</div>
-    <div class="ham-rev">✅ Stare: ${entry.stare}</div>
-    <div class="ham-rev">📅 Expiră: ${entry.data_expirare}</div>
-    ${entry.predat_catre ? `<div class="ham-rev">👤 Predat către: ${entry.predat_catre}</div>` : ""}
+    <div class="equip-id">🧰 ${entry.id_echipament} (${entry.tip})</div>
+    <div class="equip-loc">📍 ${entry.locatie}</div>
+    <div class="equip-time">⏱ ${entry.data_scan}</div>
+    <div class="equip-status">✅ Stare: ${entry.stare}</div>
+    <div class="equip-status">📅 Revizie: ${entry.data_revizie}</div>
+    <div class="equip-status">📅 Expiră: ${entry.data_expirare}</div>
+    ${entry.predat_catre ? `<div class="equip-status">👤 Predat către: ${entry.predat_catre}</div>` : ""}
   `;
 
   lista.prepend(card);
@@ -202,9 +205,9 @@ function addCard(entry) {
 // EXPORT CSV
 //--------------------------------------------------
 function exportCSV() {
-  let csv = "ID,Tip,Locatie,Stare,PredatCatre,DataScan,Expira,Observatii\n";
+  let csv = "ID,Tip,Locatie,Stare,PredatCatre,DataScan,Revizie,Expira,Observatii\n";
 
-  const cards = document.querySelectorAll(".ham-card");
+  const cards = document.querySelectorAll(".equip-card");
 
   cards.forEach((card) => {
     const lines = card.innerText.split("\n");
@@ -213,10 +216,11 @@ function exportCSV() {
     const loc = lines[1].replace("📍 ", "");
     const time = lines[2].replace("⏱ ", "");
     const stare = lines[3].replace("✅ Stare: ", "");
-    const exp = lines[4].replace("📅 Expiră: ", "");
-    const pred = lines[5] ? lines[5].replace("👤 Predat către: ", "") : "";
+    const rev = lines[4].replace("📅 Revizie: ", "");
+    const exp = lines[5].replace("📅 Expiră: ", "");
+    const pred = lines[6] ? lines[6].replace("👤 Predat către: ", "") : "";
 
-    csv += `${id},,,${loc},${stare},${pred},${time},${exp},\n`;
+    csv += `${id},,,${loc},${stare},${pred},${time},${rev},${exp}\n`;
   });
 
   const blob = new Blob([csv], { type: "text/csv" });
