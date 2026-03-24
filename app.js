@@ -47,7 +47,6 @@ async function scanNFC() {
     const controller = new AbortController();
     const reader = new NDEFReader();
 
-    // ❤️ Codul original care funcționa — nu îl atingem
     await reader.scan({ signal: controller.signal, keepSessionAlive: true });
 
     reader.onreading = async (event) => {
@@ -109,26 +108,22 @@ async function scanNFC() {
       const stare = conform ? "conform" : "neconform";
 
       // -----------------------------
-      // 1. Dacă este NECONFORM → cerem revizie + predat
+      // 1. Dacă este NECONFORM
       // -----------------------------
       if (!conform) {
-        dataRevizie = prompt("Introduceți data ultimei revizii:", "");
-        if (!dataRevizie) dataRevizie = "Nespecificat";
-
-        predat_catre = prompt("Cine a preluat echipamentul?", "");
-        if (!predat_catre) predat_catre = "Nespecificat";
+        dataRevizie = prompt("Introduceți data ultimei revizii:", "") || "Nespecificat";
+        predat_catre = prompt("Cine a preluat echipamentul?", "") || "Nespecificat";
       }
 
       // -----------------------------
-      // 2. ECHIPAMENT NOU → cerem revizia O SINGURĂ DATĂ
+      // 2. ECHIPAMENT NOU
       // -----------------------------
       else if (existing.length === 0) {
-        dataRevizie = prompt("Introduceți data ultimei revizii:", "");
-        if (!dataRevizie) dataRevizie = "Nespecificat";
+        dataRevizie = prompt("Introduceți data ultimei revizii:", "") || "Nespecificat";
       }
 
       // -----------------------------
-      // 3. EXISTĂ + CONFORM → păstrăm revizia veche
+      // 3. EXISTĂ ÎN DB
       // -----------------------------
       else {
         dataRevizie = existing[0].data_revizie;
@@ -168,6 +163,7 @@ async function scanNFC() {
 async function saveToSupabase(entry) {
 
   const checkUrl = `${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}&select=*`;
+
   const existing = await fetch(checkUrl, {
     headers: {
       apikey: SUPABASE_KEY,
@@ -216,7 +212,7 @@ function isExpired(rev) {
 }
 
 //--------------------------------------------------
-// AFISARE CARD — ICON, CULOARE NEConform, REV IZIE Roșie
+// CARD ECHIPAMENT
 //--------------------------------------------------
 function addCard(entry) {
   const lista = document.getElementById("lista");
