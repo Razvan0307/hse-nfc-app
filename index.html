@@ -6,7 +6,7 @@
     <title>HSE NFC Scan</title>
 
     <!-- PWA Manifest -->
-    manifest.json
+    <link rel="manifest" href="manifest.json">
 
     <style>
         body {
@@ -15,14 +15,12 @@
             font-family: "Segoe UI", Arial, sans-serif;
         }
 
-        /* CONTAINER CENTRAL */
         .container {
             max-width: 650px;
             margin: auto;
             padding: 20px;
         }
 
-        /* TITLU APLICATIE */
         h1 {
             text-align: center;
             font-size: 32px;
@@ -31,7 +29,6 @@
             font-weight: 700;
         }
 
-        /* CARD GENERAL */
         .card {
             background: white;
             padding: 20px;
@@ -40,7 +37,6 @@
             margin-bottom: 20px;
         }
 
-        /* BUTOANE */
         .btn {
             width: 100%;
             padding: 16px;
@@ -50,8 +46,8 @@
             cursor: pointer;
             margin: 10px 0;
             color: white;
-            transition: 0.2s;
             font-weight: 600;
+            transition: 0.2s;
         }
 
         .btn-blue { background: #1d4ed8; }
@@ -63,14 +59,12 @@
         .btn-red { background: #dc2626; }
         .btn-red:hover { background: #a81e1e; }
 
-        /* TEXT LOCAȚIE */
         #locatie {
             color: #16a34a;
             font-weight: bold;
             font-size: 18px;
         }
 
-        /* CARD ECHIPAMENT SCANAT */
         .equip-card {
             background: #ffffff;
             padding: 14px;
@@ -107,7 +101,6 @@
             font-size: 15px;
         }
 
-        /* ANIMAȚIE "SCANEAZĂ" */
         .pulse {
             animation: pulseAnim 1s infinite;
         }
@@ -129,7 +122,6 @@
     <div class="card">
         <p><strong>Locația curentă:</strong> <span id="locatie">Nesetat</span></p>
 
-        <!-- Buton Scan NFC -->
         <button id="scanNFC" class="btn btn-blue">📡 Scanează NFC</button>
 
         <p id="scanStatus"
@@ -147,9 +139,7 @@
 
 </div>
 
-
-<!-- App JS -->
-app.js</script>
+<script src="app.js"></script> <!-- ✅ FIX: încărcarea corectă a scriptului -->
 
 <script>
 if ("serviceWorker" in navigator) {
