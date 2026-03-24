@@ -1,119 +1,123 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HSE NFC Scan</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HSE NFC Scan</title>
 
-<link rel="manifest" href="manifest.json" />
+    <!-- PWA Manifest -->
+    manifest.json
 
-<style>
-    body {
-        margin: 0;
-        background: #f0f2f5;
-        font-family: "Segoe UI", Arial, sans-serif;
-    }
+    <style>
+        body {
+            margin: 0;
+            background: #f0f2f5;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
 
-    /* CONTAINER */
-    .container {
-        max-width: 600px;
-        margin: auto;
-        padding: 20px;
-    }
+        /* CONTAINER CENTRAL */
+        .container {
+            max-width: 650px;
+            margin: auto;
+            padding: 20px;
+        }
 
-    /* HEADER */
-    h1 {
-        text-align: center;
-        font-size: 30px;
-        color: #1d4ed8;
-        margin-bottom: 5px;
-    }
+        /* TITLU APLICATIE */
+        h1 {
+            text-align: center;
+            font-size: 32px;
+            color: #1d4ed8;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
 
-    /* CARD */
-    .card {
-        background: white;
-        padding: 20px;
-        border-radius: 16px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        margin-bottom: 20px;
-    }
+        /* CARD GENERAL */
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
 
-    /* BUTOANE */
-    .btn {
-        width: 100%;
-        padding: 16px;
-        font-size: 20px;
-        border: none;
-        border-radius: 12px;
-        cursor: pointer;
-        margin: 10px 0;
-        color: white;
-        transition: 0.2s;
-    }
+        /* BUTOANE */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 20px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            margin: 10px 0;
+            color: white;
+            transition: 0.2s;
+            font-weight: 600;
+        }
 
-    .btn-blue { background: #1d4ed8; }
-    .btn-blue:hover { background: #1539a3; }
+        .btn-blue { background: #1d4ed8; }
+        .btn-blue:hover { background: #1539a3; }
 
-    .btn-yellow { background: #f59e0b; }
-    .btn-yellow:hover { background: #d48806; }
+        .btn-yellow { background: #f59e0b; }
+        .btn-yellow:hover { background: #d48806; }
 
-    .btn-red { background: #dc2626; }
-    .btn-red:hover { background: #a81e1e; }
+        .btn-red { background: #dc2626; }
+        .btn-red:hover { background: #a81e1e; }
 
-    /* TEXT */
-    #locatie {
-        color: #16a34a;
-        font-weight: bold;
-    }
+        /* TEXT LOCAȚIE */
+        #locatie {
+            color: #16a34a;
+            font-weight: bold;
+            font-size: 18px;
+        }
 
-    /* CARD PENTRU HAMURI */
-    .ham-card {
-        background: #ffffff;
-        padding: 14px;
-        margin-top: 12px;
-        border-radius: 12px;
-        border-left: 6px solid #1d4ed8;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
+        /* CARD ECHIPAMENT SCANAT */
+        .equip-card {
+            background: #ffffff;
+            padding: 14px;
+            margin-top: 12px;
+            border-radius: 12px;
+            border-left: 6px solid #1d4ed8;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
 
-    .ham-id {
-        font-size: 20px;
-        font-weight: bold;
-        color: #1d4ed8;
-    }
+        .equip-id {
+            font-size: 22px;
+            font-weight: bold;
+            color: #1d4ed8;
+        }
 
-    .ham-loc {
-        font-size: 18px;
-        color: #16a34a;
-        margin-top: 4px;
-    }
+        .equip-loc {
+            font-size: 19px;
+            color: #16a34a;
+            margin-top: 4px;
+        }
 
-    .ham-time {
-        font-size: 15px;
-        color: #6b7280;
-    }
+        .equip-time {
+            font-size: 15px;
+            color: #6b7280;
+        }
 
-    .ham-rev {
-        margin-top: 8px;
-        padding: 4px 8px;
-        background: #f3f4f6;
-        border-radius: 6px;
-        display: inline-block;
-        color: #444;
-    }
+        .equip-status {
+            margin-top: 8px;
+            padding: 4px 8px;
+            background: #f3f4f6;
+            border-radius: 6px;
+            display: inline-block;
+            color: #444;
+            font-size: 15px;
+        }
 
-    /* ANIMATIE PULSE */
-    .pulse {
-        animation: pulseAnim 1s infinite;
-    }
+        /* ANIMAȚIE "SCANEAZĂ" */
+        .pulse {
+            animation: pulseAnim 1s infinite;
+        }
 
-    @keyframes pulseAnim {
-        0% { opacity: 1; }
-        50% { opacity: 0.4; }
-        100% { opacity: 1; }
-    }
-</style>
-
+        @keyframes pulseAnim {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+    </style>
 </head>
 
 <body>
@@ -125,24 +129,27 @@
     <div class="card">
         <p><strong>Locația curentă:</strong> <span id="locatie">Nesetat</span></p>
 
+        <!-- Buton Scan NFC -->
         <button id="scanNFC" class="btn btn-blue">📡 Scanează NFC</button>
 
         <p id="scanStatus"
-           style="display:none; text-align:center; font-weight:bold; color:#1d4ed8;"
+           style="display:none; text-align:center; font-weight:bold; color:#1d4ed8; font-size:18px;"
            class="pulse">
-            Apropie telefonul de tag…
+            🔎 Apropie telefonul de tag...
         </p>
     </div>
 
-    <h2>Hamuri scanate:</h2>
+    <h2 style="font-size:22px; margin-top:25px; color:#333;">Echipamente scanate:</h2>
     <div id="lista"></div>
 
     <button id="exportCSV" class="btn btn-yellow">📁 Exportă în Excel (CSV)</button>
-    <button id="clearData" class="btn btn-red">🗑️ Șterge date</button>
+    <button id="clearData" class="btn btn-red">🗑️ Șterge afișarea locală</button>
 
 </div>
 
-<script src="app.js"></script>
+
+<!-- App JS -->
+app.js</script>
 
 <script>
 if ("serviceWorker" in navigator) {
