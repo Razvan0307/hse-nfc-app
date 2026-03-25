@@ -10,7 +10,8 @@ const SUPABASE_KEY = "sb_publishable_BgWYudD6xuJbxRuZHt3mHg_35f1e6j6";
 let currentLocation = "Nesetat";
 let lastScanTime = 0;
 let isScanning = false;
-let pendingEntry = null; // entry salvat temporar pentru popup
+let pendingEntry = null;
+let lastScannedID = null;
 
 //--------------------------------------------------
 // BUTOANE
@@ -22,6 +23,15 @@ document.getElementById("clearData").addEventListener("click", () => {
   if (confirm("Sigur vrei să ștergi afișarea locală?")) {
     document.getElementById("lista").innerHTML = "";
   }
+});
+
+// ✅ BUTON ISTORIC
+document.getElementById("showHistory").addEventListener("click", async () => {
+  if (!lastScannedID) {
+    alert("Scanează mai întâi un echipament pentru a vedea istoricul!");
+    return;
+  }
+  await loadHistory(lastScannedID);
 });
 
 //--------------------------------------------------
@@ -42,17 +52,18 @@ function closePopup() {
 document.getElementById("btn-conform").onclick = async () => {
   pendingEntry.stare = "conform";
   pendingEntry.observatii = "";
+
   await saveToSupabase(pendingEntry);
   addCard({...pendingEntry, idDisplay: pendingEntry.id_echipament.replace(/^\w+_/, "")});
   closePopup();
 };
 
-// ✅ NECONFORM → afișează câmpul de observații
+// ✅ NECONFORM → afișăm observații
 document.getElementById("btn-neconform").onclick = () => {
   document.getElementById("popup-observatii").style.display = "block";
 };
 
-// ✅ SALVARE OBSERVAȚII
+// ✅ SALVEAZĂ OBSERVAȚII
 document.getElementById("btn-save-obs").onclick = async () => {
   const obs = document.getElementById("obs-text").value.trim();
   pendingEntry.stare = "neconform";
@@ -79,10 +90,14 @@ function detectTip(id) {
 // FUNCTIE PRINCIPALA: SCAN NFC
 //--------------------------------------------------
 async function scanNFC() {
-  if (isScanning) return;
 
+  if (isScanning) return;
   isScanning = true;
+
   document.getElementById("scanStatus").style.display = "block";
+
+  // când scanezi echipament nou, ascunde istoricul
+  document.getElementById("istoric").style.display = "none";
 
   try {
     const reader = new NDEFReader();
@@ -110,8 +125,9 @@ async function scanNFC() {
 
       // ✅ ECHIPAMENT
       const id = rawText;
-      const tip = detectTip(id);
+      lastScannedID = id;
 
+      const tip = detectTip(id);
       if (tip === "necunoscut") {
         alert("❌ Tag necunoscut!");
         isScanning = false;
@@ -120,7 +136,7 @@ async function scanNFC() {
 
       const timestamp = new Date().toLocaleString("ro-RO");
 
-      // ✅ ENTRY de trimis în popup
+      // ✅ ENTRY pentru popup
       const entry = {
         id_echipament: id,
         tip,
@@ -128,10 +144,10 @@ async function scanNFC() {
         stare: "",
         observatii: "",
         data_scan: timestamp,
-        data_revizie: "" // compatibil DB
+        data_revizie: "" 
       };
 
-      // ✅ DESCHIDEM POPUP-UL
+      // ✅ deschidere popup
       showPopup(entry);
 
       isScanning = false;
@@ -149,6 +165,7 @@ async function scanNFC() {
 // SAVE / UPDATE SUPABASE
 //--------------------------------------------------
 async function saveToSupabase(entry) {
+
   const checkUrl = `${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}&select=*`;
 
   const existing = await fetch(checkUrl, {
@@ -205,6 +222,50 @@ function addCard(entry) {
   `;
 
   lista.prepend(card);
+}
+
+//--------------------------------------------------
+// ✅ FUNCȚIE ISTORIC
+//--------------------------------------------------
+async function loadHistory(id) {
+
+  const box = document.getElementById("istoric");
+  const content = document.getElementById("istoricContent");
+
+  box.style.display = "block";
+  content.innerHTML = "<p>Se încarcă istoricul...</p>";
+
+  const url = `${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${id}&select=*`;
+
+  const data = await fetch(url, {
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`
+    }
+  }).then(r => r.json());
+
+  if (!data || data.length === 0) {
+    content.innerHTML = "<p>Nu există istoric pentru acest echipament.</p>";
+    return;
+  }
+
+  // sortare descrescător
+  data.sort((a, b) => new Date(b.data_scan) - new Date(a.data_scan));
+
+  let html = "";
+  data.forEach(item => {
+    html += `
+      <div class="equip-card" style="border-left: 6px solid ${item.stare === 'conform' ? '#16a34a' : '#dc2626'};">
+        <div class="equip-id">🧰 ${item.id_echipament.replace(/^\w+_/, "")}</div>
+        <div class="equip-loc">📍 ${item.locatie}</div>
+        <div class="equip-time">⏱ ${item.data_scan}</div>
+        <div class="equip-status">Stare: ${item.stare}</div>
+        ${item.observatii ? `<div class="equip-status">✏️ Observații: ${item.observatii}</div>` : ""}
+      </div>
+    `;
+  });
+
+  content.innerHTML = html;
 }
 
 //--------------------------------------------------
