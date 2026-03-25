@@ -7,62 +7,98 @@
 
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: #f3f4f6;
             margin: 0;
+            background: #f0f2f5;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: auto;
             padding: 20px;
         }
-        .container {
-            max-width: 600px;
-            margin: auto;
+
+        .card {
             background: white;
             padding: 20px;
             border-radius: 16px;
-            box-shadow: 0 4px 18px rgba(0,0,0,0.15);
-        }
-        h1 {
-            text-align: center;
-            color: #1d4ed8;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             margin-bottom: 20px;
         }
-        .btn {
-            width: 100%;
-            padding: 14px;
-            font-size: 18px;
-            border: none;
-            border-radius: 10px;
-            margin-top: 10px;
-            cursor: pointer;
-            color: white;
+
+        h1 {
+            text-align: center;
+            font-size: 32px;
+            color: #1d4ed8;
+            font-weight: 700;
         }
-        .btn-blue { background: #1d4ed8; }
-        .btn-blue:hover { background: #1539a3; }
+
         textarea {
             width: 100%;
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 8px;
+            padding: 14px;
+            border-radius: 12px;
             border: 1px solid #bbb;
+            font-size: 18px;
+            resize: none;
+            margin-top: 10px;
         }
-        a { text-decoration: none; color: #1d4ed8; font-weight: bold; }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 20px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            margin: 10px 0;
+            color: white;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .btn-blue { background: #1d4ed8; }
+        .btn-blue:hover { background: #1539a3; }
+
+        .btn-green { background: #16a34a; }
+        .btn-green:hover { background: #0f7f38; }
+
+        .btn-gray { background: #6b7280; }
+        .btn-gray:hover { background: #4b5563; }
+
+        a {
+            text-decoration: none;
+            display: block;
+        }
     </style>
 </head>
 
 <body>
+
     <div class="container">
+
         <h1>✍️ Scriere NFC</h1>
 
-        <p>Introduceți textul ce va fi scris pe tag-ul NFC:</p>
+        <div class="card">
+            <p style="font-size:18px;">
+                Introduceți textul care va fi scris pe tag-ul NFC:
+            </p>
 
-        <textarea id="nfcText" rows="3" placeholder="Ex: HAM_001, LOC_Magazin, KIT_005"></textarea>
+            <textarea id="nfcText" rows="3" placeholder="Ex: HAM_001, LOC_Magazin, KIT_015"></textarea>
 
-        <button id="writeButton" class="btn btn-blue">Scrie pe NFC</button>
+            <button id="writeButton" class="btn btn-green">
+                ✅ Scrie pe tag NCR
+            </button>
 
-        <p style="text-align:center; margin-top:20px;">
-            <a href="index.html">⬅ Înapoi la scanare</a>
+            <a href="index.html">
+                <button class="btn btn-gray">⬅ Înapoi la scanare</button>
+            </a>
+        </div>
+
+        <p style="text-align:center; color:#6b7280; font-size:14px;">
+            *Scrierea NFC funcționează doar pe Android + Chrome*
         </p>
+
     </div>
 
-    <script src="write.js"></script>
-</body>
+    <script src="y>
 </html>
