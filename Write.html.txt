@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scriere NFC</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f4f6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.15);
+        }
+        h1 {
+            text-align: center;
+            color: #1d4ed8;
+            margin-bottom: 20px;
+        }
+        .btn {
+            width: 100%;
+            padding: 14px;
+            font-size: 18px;
+            border: none;
+            border-radius: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+            color: white;
+        }
+        .btn-blue { background: #1d4ed8; }
+        .btn-blue:hover { background: #1539a3; }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #bbb;
+        }
+        a { text-decoration: none; color: #1d4ed8; font-weight: bold; }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>✍️ Scriere NFC</h1>
+
+        <p>Introduceți textul ce va fi scris pe tag-ul NFC:</p>
+
+        <textarea id="nfcText" rows="3" placeholder="Ex: HAM_001, LOC_Magazin, KIT_005"></textarea>
+
+        <button id="writeButton" class="btn btn-blue">Scrie pe NFC</button>
+
+        <p style="text-align:center; margin-top:20px;">
+            <a href="index.html">⬅ Înapoi la scanare</a>
+        </p>
+    </div>
+
+    <script src="write.js"></script>
+</body>
+</html>
