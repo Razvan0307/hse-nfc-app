@@ -20,7 +20,7 @@
 
         .card {
             background: white;
-            padding: 20px;
+            padding: 25px;
             border-radius: 16px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             margin-bottom: 20px;
@@ -31,16 +31,18 @@
             font-size: 32px;
             color: #1d4ed8;
             font-weight: 700;
+            margin-bottom: 25px;
         }
 
         textarea {
             width: 100%;
             padding: 14px;
             border-radius: 12px;
-            border: 1px solid #bbb;
+            border: 1px solid #ccc;
             font-size: 18px;
             resize: none;
             margin-top: 10px;
+            box-sizing: border-box;
         }
 
         .btn {
@@ -50,24 +52,25 @@
             border: none;
             border-radius: 12px;
             cursor: pointer;
-            margin: 10px 0;
+            margin-top: 12px;
             color: white;
             font-weight: 600;
             transition: 0.2s;
         }
 
-        .btn-blue { background: #1d4ed8; }
-        .btn-blue:hover { background: #1539a3; }
-
         .btn-green { background: #16a34a; }
         .btn-green:hover { background: #0f7f38; }
+
+        .btn-red { background: #dc2626; }
+        .btn-red:hover { background: #a81e1e; }
 
         .btn-gray { background: #6b7280; }
         .btn-gray:hover { background: #4b5563; }
 
-        a {
-            text-decoration: none;
-            display: block;
+        a { text-decoration: none; display: block; }
+
+        #statusBox {
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -76,29 +79,44 @@
 
     <div class="container">
 
-        <h1>✍️ Scriere NFC</h1>
+        <h1>✍️ Scriere Tag NCR</h1>
 
         <div class="card">
             <p style="font-size:18px;">
                 Introduceți textul care va fi scris pe tag-ul NFC:
             </p>
 
+            <!-- ✅ TEXTAREA ALINIATĂ PERFECT -->
             <textarea id="nfcText" rows="3" placeholder="Ex: HAM_001, LOC_Magazin, KIT_015"></textarea>
 
+            <!-- ✅ SCRIERE TAG -->
             <button id="writeButton" class="btn btn-green">
                 ✅ Scrie pe tag NCR
             </button>
 
+            <!-- ✅ ȘTERGERE TAG -->
+            <button id="eraseButton" class="btn btn-red">
+                🧹 Șterge complet tag-ul
+            </button>
+
+            <!-- ✅ ÎNAPOI LA SCANARE -->
             <a href="index.html">
                 <button class="btn btn-gray">⬅ Înapoi la scanare</button>
             </a>
         </div>
 
-        <p style="text-align:center; color:#6b7280; font-size:14px;">
-            *Scrierea NFC funcționează doar pe Android + Chrome*
+        <!-- ✅ Mesaj "Apropie telefonul" -->
+        <div id="statusBox"></div>
+
+        <p style="text-align:center; color:#6b7280; font-size:14px; margin-top:20px;">
+            *Scrierea și ștergerea NFC funcționează doar pe Android + Chrome*
         </p>
 
     </div>
 
-    <script src="y>
+    <!-- ✅ TAG SCRIPT CORECT, FĂRĂ ERORI -->
+    <script src="write.js"></script>
+
+</body>
 </html>
+``
