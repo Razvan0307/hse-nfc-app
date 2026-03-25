@@ -28,7 +28,7 @@ document.getElementById("clearData").addEventListener("click", () => {
 // ✅ BUTON ISTORIC
 document.getElementById("showHistory").addEventListener("click", async () => {
   if (!lastScannedID) {
-    alert("Scanează mai întâi un echipament pentru a vedea istoricul!");
+    alert("Scanează un echipament mai întâi!");
     return;
   }
   await loadHistory(lastScannedID);
@@ -54,11 +54,13 @@ document.getElementById("btn-conform").onclick = async () => {
   pendingEntry.observatii = "";
 
   await saveToSupabase(pendingEntry);
+  await saveToHistory(pendingEntry);
+
   addCard({...pendingEntry, idDisplay: pendingEntry.id_echipament.replace(/^\w+_/, "")});
   closePopup();
 };
 
-// ✅ NECONFORM → afișăm observații
+// ✅ NECONFORM
 document.getElementById("btn-neconform").onclick = () => {
   document.getElementById("popup-observatii").style.display = "block";
 };
@@ -70,8 +72,9 @@ document.getElementById("btn-save-obs").onclick = async () => {
   pendingEntry.observatii = obs || "Fără observații";
 
   await saveToSupabase(pendingEntry);
-  addCard({...pendingEntry, idDisplay: pendingEntry.id_echipament.replace(/^\w+_/, "")});
+  await saveToHistory(pendingEntry);
 
+  addCard({...pendingEntry, idDisplay: pendingEntry.id_echipament.replace(/^\w+_/, "")});
   closePopup();
 };
 
@@ -87,7 +90,7 @@ function detectTip(id) {
 }
 
 //--------------------------------------------------
-// FUNCTIE PRINCIPALA: SCAN NFC
+// SCAN NFC
 //--------------------------------------------------
 async function scanNFC() {
 
@@ -95,9 +98,7 @@ async function scanNFC() {
   isScanning = true;
 
   document.getElementById("scanStatus").style.display = "block";
-
-  // când scanezi echipament nou, ascunde istoricul
-  document.getElementById("istoric").style.display = "none";
+  document.getElementById("istoric").style.display = "none"; // ascundem vechiul istoric
 
   try {
     const reader = new NDEFReader();
@@ -144,10 +145,9 @@ async function scanNFC() {
         stare: "",
         observatii: "",
         data_scan: timestamp,
-        data_revizie: "" 
+        data_revizie: ""
       };
 
-      // ✅ deschidere popup
       showPopup(entry);
 
       isScanning = false;
@@ -162,17 +162,14 @@ async function scanNFC() {
 }
 
 //--------------------------------------------------
-// SAVE / UPDATE SUPABASE
+// SAVE / UPDATE ULTIMA STARE ÎN echipamente
 //--------------------------------------------------
 async function saveToSupabase(entry) {
 
   const checkUrl = `${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}&select=*`;
 
   const existing = await fetch(checkUrl, {
-    headers: {
-      apikey: SUPABASE_KEY,
-      Authorization: `Bearer ${SUPABASE_KEY}`
-    }
+    headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
   }).then(r => r.json());
 
   // ✅ UPDATE
@@ -188,7 +185,6 @@ async function saveToSupabase(entry) {
       body: JSON.stringify(entry)
     });
   }
-
   // ✅ INSERT
   else {
     await fetch(`${SUPABASE_URL}/rest/v1/echipamente`, {
@@ -205,27 +201,23 @@ async function saveToSupabase(entry) {
 }
 
 //--------------------------------------------------
-// AFIȘARE CARD
+// ✅ SAVE HISTORY în echipamente_istoric
 //--------------------------------------------------
-function addCard(entry) {
-  const lista = document.getElementById("lista");
-
-  const card = document.createElement("div");
-  card.className = "equip-card";
-
-  card.innerHTML = `
-    <div class="equip-id">🧰 ${entry.idDisplay} (${entry.tip})</div>
-    <div class="equip-loc">📍 ${entry.locatie}</div>
-    <div class="equip-time">⏱ ${entry.data_scan}</div>
-    <div class="equip-status">Stare: ${entry.stare}</div>
-    ${entry.observatii ? `<div class="equip-status">✏️ Observații: ${entry.observatii}</div>` : ""}
-  `;
-
-  lista.prepend(card);
+async function saveToHistory(entry) {
+  await fetch(`${SUPABASE_URL}/rest/v1/echipamente_istoric`, {
+    method: "POST",
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`,
+      "Content-Type": "application/json",
+      Prefer: "return=representation"
+    },
+    body: JSON.stringify(entry)
+  });
 }
 
 //--------------------------------------------------
-// ✅ FUNCȚIE ISTORIC
+// ✅ FUNCȚIE ISTORIC (CITEȘTE DIN echipamente_istoric)
 //--------------------------------------------------
 async function loadHistory(id) {
 
@@ -235,17 +227,14 @@ async function loadHistory(id) {
   box.style.display = "block";
   content.innerHTML = "<p>Se încarcă istoricul...</p>";
 
-  const url = `${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${id}&select=*`;
+  const url = `${SUPABASE_URL}/rest/v1/echipamente_istoric?id_echipament=eq.${id}&select=*`;
 
   const data = await fetch(url, {
-    headers: {
-      apikey: SUPABASE_KEY,
-      Authorization: `Bearer ${SUPABASE_KEY}`
-    }
+    headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
   }).then(r => r.json());
 
   if (!data || data.length === 0) {
-    content.innerHTML = "<p>Nu există istoric pentru acest echipament.</p>";
+    content.innerHTML = "<p>Nu există istoric.</p>";
     return;
   }
 
