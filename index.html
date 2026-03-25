@@ -9,13 +9,20 @@
     <link rel="manifest" href="manifest.json">
 
     <style>
-        /* ✅ FUNDAL DP WORLD STYLE */
+        /* ✅ FUNDAL DEGRADE alb → gri → albastru → mov */
         body {
             margin: 0;
             font-family: "Segoe UI", Arial, sans-serif;
-            background: linear-gradient(135deg, #4f46e5, #0ea5e9);
+            background: linear-gradient(
+                180deg,
+                #ffffff,
+                #e9e9e9,
+                #b6c8ff,
+                #8c82ff
+            );
             min-height: 100vh;
             padding-bottom: 30px;
+            background-attachment: fixed;
         }
 
         .container {
@@ -24,21 +31,21 @@
             padding: 20px;
         }
 
-        /* ✅ TITLU CU LOGO */
+        /* ✅ Titlu + Logo DP World */
         h1 {
             text-align: center;
-            font-size: 32px;
-            color: white;
+            font-size: 34px;
+            color: #1d4ed8;
             font-weight: 700;
-            margin-bottom: 20px;
+            margin-bottom: 28px;
             display:flex;
             justify-content:center;
             align-items:center;
-            gap:12px;
+            gap: 22px;
         }
 
         h1 img {
-            width: 60px;
+            width: 100px; /* LOGO MAI MARE */
             height:auto;
         }
 
@@ -76,7 +83,6 @@
             font-size: 18px;
         }
 
-        /* ✅ LISTA */
         .equip-card {
             background: #ffffff;
             padding: 14px;
@@ -86,7 +92,7 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        /* ✅ POPUP */
+        /* ✅ POPUP BACKGROUND */
         #popup-bg {
             display:none;
             position:fixed;
@@ -98,12 +104,15 @@
             z-index:9999;
         }
 
+        /* ✅ POPUP SCROLLABIL + înălțime maximă */
         #popup {
             background:white;
             padding:20px;
             border-radius:16px;
             width:90%;
             max-width:420px;
+            max-height: 80vh;    /* ✅ NU iese din ecran */
+            overflow-y: auto;    /* ✅ permite scroll */
             box-shadow:0 4px 20px rgba(0,0,0,0.25);
             animation: fadeIn .2s ease-out;
         }
@@ -138,7 +147,6 @@
 
 <div class="container">
 
-    <!-- ✅ TITLU CU LOGO -->
     <h1>
         <img src="dpw.png" alt="DP World">
         HSE NFC Scan
@@ -180,6 +188,7 @@
 <!-- ✅ POPUP COMPLET CU FOTO -->
 <div id="popup-bg">
     <div id="popup">
+
         <h3 style="text-align:center; font-size:22px; color:#1d4ed8;">
             Echipamentul este conform?
         </h3>
@@ -189,26 +198,29 @@
 
         <div id="popup-observatii" style="display:none; margin-top:12px;">
 
-            <textarea id="obs-text" rows="4" placeholder="Introduceți observațiile..."
+            <textarea id="obs-text" rows="4"
+                      placeholder="Introduceți observațiile..."
                       style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;"></textarea>
 
             <!-- ✅ Buton FOTO -->
             <button id="btn-photo" class="btn-blue2">📸 Adaugă fotografie (opțional)</button>
 
-            <!-- ✅ Input foto -->
-            <input type="file" id="photo-input" accept="image/*" capture="environment" style="display:none;">
+            <!-- ✅ Input foto (CORRECT pentru Android/Chrome) -->
+            <label style="opacity:0; position:absolute; left:-9999px;">
+                <input type="file" id="photo-input" accept="image/*" capture="environment">
+            </label>
 
-            <!-- ✅ Previzualizare -->
+            <!-- ✅ Previzualizare foto -->
             <img id="photo-preview">
 
-            <!-- ✅ Salvare -->
+            <!-- ✅ Salvare vizibilă indiferent de preview -->
             <button id="btn-save-obs" class="btn-blue2">💾 Salvează</button>
 
         </div>
+
     </div>
 </div>
 
-<!-- ✅ App logic -->
 <script src="app.js"></script>
 
 <script>
