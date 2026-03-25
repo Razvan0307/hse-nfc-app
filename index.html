@@ -6,17 +6,17 @@
     <title>HSE NFC Scan</title>
 
     <style>
-        /* ✅ FUNDAL degrade alb-gri-albastru-mov, bine amestecat */
+        /* ✅ FUNDAL DEGRADE AMESTECAT – alb → gri → albastru → mov */
         body {
             margin: 0;
             font-family: "Segoe UI", Arial, sans-serif;
             background: linear-gradient(
-                145deg,
+                135deg,
                 #ffffff 0%,
-                #e9e9e9 20%,
-                #cdd8ff 45%,
-                #b0b3ff 65%,
-                #8d7aff 100%
+                #e8e8e8 25%,
+                #cfd8ff 55%,
+                #b4b5ff 75%,
+                #8e7bff 100%
             );
             background-attachment: fixed;
             min-height: 100vh;
@@ -29,7 +29,7 @@
             padding: 20px;
         }
 
-        /* ✅ Logo + Titlu */
+        /* ✅ Titlu */
         h1 {
             text-align: center;
             font-size: 36px;
@@ -44,15 +44,30 @@
 
         h1 img {
             width: 100px;
-            height:auto;
         }
 
+        /* ✅ CARD PRINCIPAL */
         .card {
             background: white;
             padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.10);
-            margin-bottom: 20px;
+            border-radius: 18px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            margin-bottom: 22px;
+        }
+
+        /* ✅ CARD-uri din lista scanată – delimitate vizual */
+        .equip-card {
+            background: #ffffff;
+            padding: 16px;
+            margin-top: 16px;
+            border-radius: 14px;
+            border-left: 6px solid #1d4ed8;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+            background: linear-gradient(
+                135deg,
+                #ffffff,
+                #f8f8ff
+            );
         }
 
         .btn {
@@ -70,9 +85,9 @@
         .btn-blue { background: #1d4ed8; }
         .btn-blue2 { background: #1e40af; }
         .btn-green { background: #16a34a; }
-        .btn-red { background: #dc2626; }
-        .btn-red2 { background:#dc2626; }
         .btn-yellow { background:#f59e0b; }
+        .btn-red { background: #dc2626; }
+        .btn-red2 { background:#b91c1c; }
 
         #locatie {
             color: #16a34a;
@@ -80,7 +95,7 @@
             font-size: 18px;
         }
 
-        /* ✅ Popup */
+        /* ✅ POPUP BACKGROUND */
         #popup-bg {
             display:none;
             position:fixed;
@@ -92,16 +107,16 @@
             z-index:9999;
         }
 
-        /* ✅ Popup scrollabil și vizibil integral */
+        /* ✅ POPUP scrollabil */
         #popup {
             background:white;
             padding:20px;
-            border-radius:16px;
+            border-radius:18px;
             width:90%;
-            max-width:420px;
+            max-width:430px;
             max-height:80vh;
             overflow-y:auto;
-            box-shadow:0 4px 20px rgba(0,0,0,0.25);
+            box-shadow:0 6px 20px rgba(0,0,0,0.25);
             animation: fadeIn .2s ease-out;
         }
 
@@ -116,13 +131,14 @@
             cursor:pointer;
         }
 
-        /* ✅ Preview foto */
+        /* ✅ FOTO PREVIEW */
         #photo-preview {
             display:none;
             width:100%;
-            border-radius:12px;
             margin-top:12px;
+            border-radius:12px;
             cursor:pointer;
+            box-shadow:0 3px 10px rgba(0,0,0,0.25);
         }
 
         /* ✅ FULLSCREEN FOTO */
@@ -163,7 +179,7 @@
 <div class="container">
 
     <h1>
-        <img src="dpw.png">
+        <img src="dpw.png" alt="DPW">
         HSE NFC Scan
     </h1>
 
@@ -176,11 +192,8 @@
             <button class="btn btn-green">✍️ Scrie NFC</button>
         </a>
 
-        <p id="scanStatus"
-           style="display:none; text-align:center; font-weight:bold; color:#1d4ed8; font-size:18px;"
-           class="pulse">
-            🔎 Apropie telefonul de tag...
-        </p>
+        <p id="scanStatus" style="display:none; text-align:center; font-weight:bold; color:#1d4ed8; font-size:18px;"
+           class="pulse">🔎 Apropie telefonul de tag...</p>
     </div>
 
     <h2 style="font-size:22px; margin-top:25px; color:white;">Echipamente scanate:</h2>
@@ -200,41 +213,42 @@
 
 </div>
 
-<!-- ✅ POPUP FOTO NEconform -->
+<!-- ✅ POPUP NEconform -->
 <div id="popup-bg">
     <div id="popup">
 
-        <h3 style="text-align:center; font-size:22px; color:#1d4ed8;">
-            Echipamentul este conform?
-        </h3>
+        <h3 style="text-align:center; font-size:22px; color:#1d4ed8;">Echipamentul este conform?</h3>
 
         <button id="btn-conform" class="btn-green">✅ Conform</button>
         <button id="btn-neconform" class="btn-red2">❌ Neconform</button>
 
         <div id="popup-observatii" style="display:none; margin-top:12px;">
 
+            <!-- Observații -->
             <textarea id="obs-text" rows="4"
                       placeholder="Introduceți observațiile..."
                       style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;"></textarea>
 
-            <!-- ✅ Buton FOTO -->
+            <!-- FOTO -->
             <button id="btn-photo" class="btn-blue2">📸 Adaugă fotografie (opțional)</button>
 
-            <!-- ✅ Input foto (fix Android) -->
+            <!-- input foto -->
             <label style="opacity:0; position:absolute; left:-9999px;">
                 <input type="file" id="photo-input" accept="image/*" capture="environment">
             </label>
 
-            <!-- ✅ Previzualizare mică -->
+            <!-- preview -->
             <img id="photo-preview">
 
-            <!-- ✅ Buton Șterge poză -->
-            <button id="btn-delete-photo" class="btn-red2" style="display:none;">🗑️ Șterge fotografia</button>
+            <!-- Ștergere poză -->
+            <button id="btn-delete-photo" class="btn-red2" style="display:none;">
+                🗑️ Șterge fotografia
+            </button>
 
-            <!-- ✅ Loader upload -->
+            <!-- Loader -->
             <div id="loader">⏳ Se încarcă fotografia...</div>
 
-            <!-- ✅ Salvare -->
+            <!-- Salvare -->
             <button id="btn-save-obs" class="btn-blue2">💾 Salvează</button>
 
         </div>
@@ -247,10 +261,8 @@
     <img id="fullscreen-img">
 </div>
 
-<script src="app.js"></script>
-
+<!-- ✅ JAVASCRIPT pentru fullscreen + delete foto -->
 <script>
-/* ✅ Fullscreen Foto */
 document.getElementById("photo-preview").onclick = () => {
     const full = document.getElementById("fullscreen-bg");
     const img = document.getElementById("fullscreen-img");
@@ -262,13 +274,15 @@ document.getElementById("fullscreen-bg").onclick = () => {
     document.getElementById("fullscreen-bg").style.display = "none";
 };
 
-/* ✅ Delete Photo */
 document.getElementById("btn-delete-photo").onclick = () => {
     document.getElementById("photo-preview").style.display = "none";
     document.getElementById("btn-delete-photo").style.display = "none";
     document.getElementById("photo-input").value = "";
 };
 </script>
+
+<!-- ✅ App logic -->
+<script src="app.js"></script>
 
 <script>
 if ("serviceWorker" in navigator) {
