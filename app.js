@@ -17,6 +17,7 @@ let lastScannedID = null;
 // UPLOAD FOTO ÎN SUPABASE (bucket: imagini)
 //--------------------------------------------------
 async function uploadPhoto(file, idEchipament) {
+
     const fileName = `${idEchipament}_${Date.now()}.jpg`;
 
     const resp = await fetch(
@@ -44,6 +45,7 @@ async function uploadPhoto(file, idEchipament) {
 //--------------------------------------------------
 document.getElementById("scanNFC").addEventListener("click", scanNFC);
 document.getElementById("exportCSV").addEventListener("click", exportCSV);
+
 document.getElementById("clearData").addEventListener("click", () => {
     if (confirm("Sigur vrei să ștergi afișarea locală?")) {
         document.getElementById("lista").innerHTML = "";
@@ -75,9 +77,6 @@ document.getElementById("photo-input").onchange = (e) => {
     const preview = document.getElementById("photo-preview");
     preview.src = URL.createObjectURL(file);
     preview.style.display = "block";
-
-    // arată butonul de ștergere poză
-    document.getElementById("btn-delete-photo").style.display = "block";
 };
 
 //--------------------------------------------------
@@ -89,7 +88,6 @@ function showPopup(entry) {
     document.getElementById("popup-observatii").style.display = "none";
     document.getElementById("obs-text").value = "";
     document.getElementById("photo-preview").style.display = "none";
-    document.getElementById("btn-delete-photo").style.display = "none";
     pendingEntry.photoFile = null;
 
     document.getElementById("popup-bg").style.display = "flex";
@@ -100,7 +98,6 @@ function closePopup() {
     document.getElementById("popup-observatii").style.display = "none";
     document.getElementById("obs-text").value = "";
     document.getElementById("photo-preview").style.display = "none";
-    document.getElementById("btn-delete-photo").style.display = "none";
     pendingEntry.photoFile = null;
 }
 
@@ -126,23 +123,12 @@ document.getElementById("btn-neconform").onclick = () => {
     document.getElementById("popup-observatii").style.display = "block";
 };
 
-// ✅ ŞTERGE POZA
-document.getElementById("btn-delete-photo").onclick = () => {
-    document.getElementById("photo-preview").style.display = "none";
-    document.getElementById("btn-delete-photo").style.display = "none";
-    document.getElementById("photo-input").value = "";
-    pendingEntry.photoFile = null;
-};
-
 // ✅ SALVARE OBSERVAȚII + POZĂ
 document.getElementById("btn-save-obs").onclick = async () => {
     const obs = document.getElementById("obs-text").value.trim();
 
     pendingEntry.stare = "neconform";
     pendingEntry.observatii = obs || "Fără observații";
-
-    // ✅ LOADER ON
-    document.getElementById("loader").style.display = "block";
 
     // ✅ upload foto dacă există
     if (pendingEntry.photoFile) {
@@ -152,9 +138,6 @@ document.getElementById("btn-save-obs").onclick = async () => {
 
     await saveToSupabase(pendingEntry);
     await saveToHistory(pendingEntry);
-
-    // ✅ LOADER OFF
-    document.getElementById("loader").style.display = "none";
 
     addCard({
         ...pendingEntry,
@@ -197,6 +180,7 @@ async function scanNFC() {
 
             const rawText = new TextDecoder().decode(event.message.records[0].data).trim();
 
+            // ✅ TAG LOCAȚIE
             if (rawText.startsWith("LOC_")) {
                 currentLocation = rawText.replace("LOC_", "");
                 document.getElementById("locatie").textContent = currentLocation;
@@ -255,6 +239,7 @@ async function saveToSupabase(entry) {
         }
     }).then(r => r.json());
 
+    // ✅ UPDATE
     if (existing.length > 0) {
         await fetch(`${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}`, {
             method: "PATCH",
@@ -266,7 +251,9 @@ async function saveToSupabase(entry) {
             },
             body: JSON.stringify(entry)
         });
-    } else {
+    }
+    // ✅ INSERT
+    else {
         await fetch(`${SUPABASE_URL}/rest/v1/echipamente`, {
             method: "POST",
             headers: {
@@ -303,6 +290,7 @@ function addCard(entry) {
 // SAVE HISTORY (cu poza)
 //--------------------------------------------------
 async function saveToHistory(entry) {
+
     const payload = {
         id_echipament: entry.id_echipament,
         locatie: entry.locatie,
@@ -329,9 +317,10 @@ async function saveToHistory(entry) {
 }
 
 //--------------------------------------------------
-// LOAD HISTORY (cu ICON FOTO + CLICK FULLSCREEN)
+// LOAD HISTORY (cu poză)
 //--------------------------------------------------
 async function loadHistory(id) {
+
     const box = document.getElementById("istoric");
     const content = document.getElementById("istoricContent");
 
@@ -357,42 +346,21 @@ async function loadHistory(id) {
     let html = "";
 
     data.forEach(item => {
-        html += `
-        <div class="equip-card history-card"
-             data-photo="${item.poza || ""}"
-             style="border-left: 6px solid ${item.stare === 'conform' ? '#16a34a' : '#dc2626'};">
 
+        html += `
+        <div class="equip-card" style="border-left: 6px solid ${item.stare === 'conform' ? '#16a34a' : '#dc2626'};">
             <div class="equip-id">🧰 ${item.id_echipament.replace(/^\w+_/, "")}</div>
             <div class="equip-loc">📍 ${item.locatie}</div>
             <div class="equip-time">⏱ ${item.data_scan}</div>
             <div class="equip-status">Stare: ${item.stare}</div>
-
             ${item.observatii ? `<div class="equip-status">✏️ Observații: ${item.observatii}</div>` : ""}
-
-            ${item.poza ? `<div class="equip-status">📷 Are fotografie</div>` : ""}
+            ${item.poza ? `${item.poza}` : ""}
         </div>
         `;
     });
 
     content.innerHTML = html;
 }
-
-//--------------------------------------------------
-// CLICK PE CARD ISTORIC → FULLSCREEN FOTO
-//--------------------------------------------------
-document.addEventListener("click", (e) => {
-    const card = e.target.closest(".history-card");
-    if (!card) return;
-
-    const url = card.dataset.photo;
-    if (!url) return;
-
-    const full = document.getElementById("fullscreen-bg");
-    const img = document.getElementById("fullscreen-img");
-
-    img.src = url;
-    full.style.display = "flex";
-});
 
 //--------------------------------------------------
 // EXPORT CSV
@@ -414,3 +382,4 @@ function exportCSV() {
     a.download = "echipamente_export.csv";
     a.click();
 }
+``
