@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Scriere NFC</title>
+    <title>Scriere Tag NFC</title>
 
     <style>
         body {
@@ -28,9 +28,9 @@
 
         h1 {
             text-align: center;
-            font-size: 32px;
+            font-size: 30px;
             color: #1d4ed8;
-            font-weight: 700;
+            margin-bottom: 15px;
         }
 
         textarea {
@@ -56,19 +56,16 @@
             transition: 0.2s;
         }
 
-        .btn-blue { background: #1d4ed8; }
-        .btn-blue:hover { background: #1539a3; }
-
         .btn-green { background: #16a34a; }
-        .btn-green:hover { background: #0f7f38; }
+        .btn-green:hover { background: #0e7a2a; }
+
+        .btn-red { background: #dc2626; }
+        .btn-red:hover { background: #a81e1e; }
 
         .btn-gray { background: #6b7280; }
         .btn-gray:hover { background: #4b5563; }
 
-        a {
-            text-decoration: none;
-            display: block;
-        }
+        a { text-decoration: none; display: block; }
     </style>
 </head>
 
@@ -76,29 +73,38 @@
 
     <div class="container">
 
-        <h1>✍️ Scriere NFC</h1>
+        <h1>✍️ Scriere Tag NCR</h1>
 
         <div class="card">
             <p style="font-size:18px;">
-                Introduceți textul care va fi scris pe tag-ul NFC:
+                Introdu textul ce va fi scris pe tag-ul NFC:
             </p>
 
-            <textarea id="nfcText" rows="3" placeholder="Ex: HAM_001, LOC_Magazin, KIT_015"></textarea>
+            <textarea id="nfcText" rows="3" placeholder="Ex: HAM_001, KIT_024, LOC_Depozit"></textarea>
 
             <button id="writeButton" class="btn btn-green">
                 ✅ Scrie pe tag NCR
             </button>
 
-            <a href="index.html">
+            <button id="eraseButton" class="btn btn-red">
+                🧹 Șterge complet tag-ul
+            </button>
+
+            index.html
                 <button class="btn btn-gray">⬅ Înapoi la scanare</button>
             </a>
         </div>
 
-        <p style="text-align:center; color:#6b7280; font-size:14px;">
-            *Scrierea NFC funcționează doar pe Android + Chrome*
+        <!-- ✅ Status: "Apropie telefonul..." -->
+        <div id="statusBox"></div>
+
+        <p style="text-align:center; color:#6b7280; font-size:14px; margin-top:20px;">
+            *Scrierea și ștergerea NFC funcționează doar pe Android + Chrome*
         </p>
 
     </div>
 
-    <script src="y>
+    write.js"></script>
+
+</body>
 </html>
