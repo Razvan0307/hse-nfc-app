@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
 
     <style>
-        /* ✅ FUNDAL GRADIENT MODERN */
+        /* ✅ FUNDAL DP WORLD STYLE */
         body {
             margin: 0;
             font-family: "Segoe UI", Arial, sans-serif;
@@ -24,7 +24,7 @@
             padding: 20px;
         }
 
-        /* ✅ TITLU CU LOGO DP WORLD */
+        /* ✅ TITLU CU LOGO */
         h1 {
             text-align: center;
             font-size: 32px;
@@ -38,7 +38,7 @@
         }
 
         h1 img {
-            width: 55px;
+            width: 60px;
             height:auto;
         }
 
@@ -76,6 +76,16 @@
             font-size: 18px;
         }
 
+        /* ✅ LISTA */
+        .equip-card {
+            background: #ffffff;
+            padding: 14px;
+            margin-top: 12px;
+            border-radius: 12px;
+            border-left: 6px solid #1d4ed8;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
         /* ✅ POPUP */
         #popup-bg {
             display:none;
@@ -98,11 +108,6 @@
             animation: fadeIn .2s ease-out;
         }
 
-        @keyframes fadeIn {
-            from {opacity:0; transform:scale(.92);}
-            to {opacity:1; transform:scale(1);}
-        }
-
         #popup button {
             width:100%;
             padding:14px;
@@ -110,7 +115,8 @@
             border-radius:10px;
             margin-top:10px;
             font-size:18px;
-            font-weight:er;
+            font-weight:600;
+            cursor:pointer;
         }
 
         /* ✅ PREVIEW FOTO */
@@ -120,6 +126,11 @@
             margin-top:10px;
             border-radius:12px;
         }
+
+        @keyframes fadeIn {
+            from {opacity:0; transform:scale(.92);}
+            to {opacity:1; transform:scale(1);}
+        }
     </style>
 </head>
 
@@ -127,9 +138,9 @@
 
 <div class="container">
 
-    <!-- ✅ LOGO + TITLU -->
+    <!-- ✅ TITLU CU LOGO -->
     <h1>
-        dpw.png
+        <img src="dpw.png" alt="DP World">
         HSE NFC Scan
     </h1>
 
@@ -138,7 +149,7 @@
 
         <button id="scanNFC" class="btn btn-blue">📡 Scanează NFC</button>
 
-        write.html
+        <a href="write.html">
             <button class="btn btn-green">✍️ Scrie NFC</button>
         </a>
 
@@ -152,7 +163,9 @@
     <h2 style="font-size:22px; margin-top:25px; color:white;">Echipamente scanate:</h2>
     <div id="lista"></div>
 
-    <button id="showHistory" class="btn btn-blue">📜 Arată istoricul echipamentului</button>
+    <button id="showHistory" class="btn btn-blue" style="margin-top:20px;">
+        📜 Arată istoricul echipamentului
+    </button>
 
     <div id="istoric" class="card" style="display:none; margin-top:15px;">
         <h3 style="margin-top:0;">Istoric echipament</h3>
@@ -164,10 +177,12 @@
 
 </div>
 
-<!-- ✅ POPUP CU OBSERVAȚII + FOTO -->
+<!-- ✅ POPUP COMPLET CU FOTO -->
 <div id="popup-bg">
     <div id="popup">
-        <h3 style="text-align:center; font-size:22px; color:#1d4ed8;">Echipamentul este conform?</h3>
+        <h3 style="text-align:center; font-size:22px; color:#1d4ed8;">
+            Echipamentul este conform?
+        </h3>
 
         <button id="btn-conform" class="btn-green">✅ Conform</button>
         <button id="btn-neconform" class="btn-red2">❌ Neconform</button>
@@ -183,10 +198,10 @@
             <!-- ✅ Input foto -->
             <input type="file" id="photo-input" accept="image/*" capture="environment" style="display:none;">
 
-            <!-- ✅ Previzualizare foto -->
+            <!-- ✅ Previzualizare -->
             <img id="photo-preview">
 
-            <!-- ✅ Buton salvare -->
+            <!-- ✅ Salvare -->
             <button id="btn-save-obs" class="btn-blue2">💾 Salvează</button>
 
         </div>
