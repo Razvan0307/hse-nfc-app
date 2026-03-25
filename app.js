@@ -17,7 +17,6 @@ let lastScannedID = null;
 // UPLOAD FOTO ÎN SUPABASE (bucket: imagini)
 //--------------------------------------------------
 async function uploadPhoto(file, idEchipament) {
-
     const fileName = `${idEchipament}_${Date.now()}.jpg`;
 
     const resp = await fetch(
@@ -130,7 +129,6 @@ document.getElementById("btn-save-obs").onclick = async () => {
     pendingEntry.stare = "neconform";
     pendingEntry.observatii = obs || "Fără observații";
 
-    // ✅ upload foto dacă există
     if (pendingEntry.photoFile) {
         const url = await uploadPhoto(pendingEntry.photoFile, pendingEntry.id_echipament);
         if (url) pendingEntry.poza = url;
@@ -180,7 +178,6 @@ async function scanNFC() {
 
             const rawText = new TextDecoder().decode(event.message.records[0].data).trim();
 
-            // ✅ TAG LOCAȚIE
             if (rawText.startsWith("LOC_")) {
                 currentLocation = rawText.replace("LOC_", "");
                 document.getElementById("locatie").textContent = currentLocation;
@@ -239,7 +236,6 @@ async function saveToSupabase(entry) {
         }
     }).then(r => r.json());
 
-    // ✅ UPDATE
     if (existing.length > 0) {
         await fetch(`${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}`, {
             method: "PATCH",
@@ -251,9 +247,7 @@ async function saveToSupabase(entry) {
             },
             body: JSON.stringify(entry)
         });
-    }
-    // ✅ INSERT
-    else {
+    } else {
         await fetch(`${SUPABASE_URL}/rest/v1/echipamente`, {
             method: "POST",
             headers: {
@@ -290,7 +284,6 @@ function addCard(entry) {
 // SAVE HISTORY (cu poza)
 //--------------------------------------------------
 async function saveToHistory(entry) {
-
     const payload = {
         id_echipament: entry.id_echipament,
         locatie: entry.locatie,
@@ -317,7 +310,7 @@ async function saveToHistory(entry) {
 }
 
 //--------------------------------------------------
-// LOAD HISTORY (cu poză)
+// LOAD HISTORY (afișează IMAGINEA + icon foto + fullscreen)
 //--------------------------------------------------
 async function loadHistory(id) {
 
@@ -348,19 +341,45 @@ async function loadHistory(id) {
     data.forEach(item => {
 
         html += `
-        <div class="equip-card" style="border-left: 6px solid ${item.stare === 'conform' ? '#16a34a' : '#dc2626'};">
+        <div class="equip-card history-card" 
+             data-photo="${item.poza || ""}"
+             style="border-left: 6px solid ${item.stare === 'conform' ? '#16a34a' : '#dc2626'};">
+            
             <div class="equip-id">🧰 ${item.id_echipament.replace(/^\w+_/, "")}</div>
             <div class="equip-loc">📍 ${item.locatie}</div>
             <div class="equip-time">⏱ ${item.data_scan}</div>
             <div class="equip-status">Stare: ${item.stare}</div>
+
             ${item.observatii ? `<div class="equip-status">✏️ Observații: ${item.observatii}</div>` : ""}
-            ${item.poza ? `${item.poza}` : ""}
+
+            ${item.poza 
+                ? `<div class="equip-status">📷 Fotografie disponibilă</div>
+                   <img src="${item.poza}" class="history-photo" style="width:100%;margin-top:10px;border-radius:12px;">`
+                : ""
+            }
         </div>
         `;
     });
 
     content.innerHTML = html;
 }
+
+//--------------------------------------------------
+// CLICK PE CARD ISTORIC → FULLSCREEN FOTO
+//--------------------------------------------------
+document.addEventListener("click", (e) => {
+    const card = e.target.closest(".history-card");
+    if (!card) return;
+
+    const url = card.dataset.photo;
+    if (!url) return;
+
+    const full = document.getElementById("fullscreen-bg");
+    const img = document.getElementById("fullscreen-img");
+
+    img.src = url;
+    full.style.display = "flex";
+});
 
 //--------------------------------------------------
 // EXPORT CSV
@@ -382,4 +401,3 @@ function exportCSV() {
     a.download = "echipamente_export.csv";
     a.click();
 }
-``
