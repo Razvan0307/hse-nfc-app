@@ -214,6 +214,26 @@ async function saveToSupabase(entry) {
         });
     }
 }
+//--------------------------------------------------
+// ✅ ADD CARD — NECESARĂ PENTRU POPUP
+//--------------------------------------------------
+function addCard(entry) { 
+    const lista = document.getElementById("lista");
+
+    const card = document.createElement("div"); 
+    card.className = "equip-card";
+
+    card.innerHTML = `
+        <div class="equip-id">🧰 ${entry.idDisplay}</div>
+        <div class="equip-loc">📍 ${entry.locatie}</div>
+        <div class="equip-time">⏱ ${entry.data_scan}</div>
+        <div class="equip-status">Stare: ${entry.stare}</div>
+        ${entry.observatii ? `<div class="equip-status">✏️ Observații: ${entry.observatii}</div>` : ""}
+    `;
+
+    lista.prepend(card); 
+}
+
 
 //--------------------------------------------------
 // ✅ SAVE HISTORY în echipamente_istoric — REPARAT
