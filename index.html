@@ -6,10 +6,10 @@
     <title>HSE NFC Scan</title>
 
     <!-- PWA Manifest -->
-    manifest.json
+    <link rel="manifest" href="manifest.json">
 
     <style>
-        /* ✅ FUNDAL DEGRADE DESCHIS */
+        /* ✅ FUNDAL DEGRADE DESCHIS (alb → gri) */
         body {
             margin: 0;
             font-family: "Segoe UI", Arial, sans-serif;
@@ -24,7 +24,7 @@
             padding: 20px;
         }
 
-        /* ✅ LOGO DP WORLD — MARE + SPAȚIERE */
+        /* ✅ TITLU CU LOGO DP WORLD MAI MARE + SPAȚIERE */
         h1 {
             text-align: center;
             font-size: 34px;
@@ -34,20 +34,21 @@
             display:flex;
             justify-content:center;
             align-items:center;
-            gap: 22px;
+            gap: 5px;
+            
         }
 
         h1 img {
-            width: 100px;
+            width: 100px;   /* ✅ LOGO MAI MARE */
             height:auto;
         }
 
-        /* ✅ CARD */
+        /* ✅ CARD GENERAL */
         .card {
             background: white;
             padding: 20px;
             border-radius: 16px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.10);
             margin-bottom: 20px;
         }
 
@@ -64,10 +65,10 @@
             transition: 0.2s;
         }
 
-        .btn-blue { background: #1d4ed8; }
+        .btn-blue  { background: #1d4ed8; }
         .btn-green { background: #16a34a; }
         .btn-yellow { background: #f59e0b; }
-        .btn-red { background: #dc2626; }
+        .btn-red  { background: #dc2626; }
         .btn-red2 { background:#dc2626; }
         .btn-blue2 { background:#1d4ed8; }
 
@@ -139,9 +140,9 @@
 
 <div class="container">
 
-    <!-- ✅ TITLU + LOGO DPW -->
+    <!-- ✅ LOGO DP + TITLU -->
     <h1>
-        dpw.png
+        <img src="dpw.png" alt="DP World">
         HSE NFC Scan
     </h1>
 
@@ -150,7 +151,7 @@
 
         <button id="scanNFC" class="btn btn-blue">📡 Scanează NFC</button>
 
-        write.html
+        <a href="write.html">
             <button class="btn btn-green">✍️ Scrie NFC</button>
         </a>
 
@@ -176,7 +177,7 @@
 
 </div>
 
-<!-- ✅ POPUP CU FOTO REPARAT -->
+<!-- ✅ POPUP COMPLET CU FOTO -->
 <div id="popup-bg">
     <div id="popup">
 
@@ -196,21 +197,20 @@
             <!-- ✅ Buton FOTO -->
             <button id="btn-photo" class="btn-blue2">📸 Adaugă fotografie (opțional)</button>
 
-            <!-- ✅ Input camera — FIX pentru Chrome -->
-            <label style="opacity:0; position:absolute; left:-9999px;">
-                <input type="file" id="photo-input" accept="image/*" capture="environment">
-            </label>
+            <!-- ✅ Input camera -->
+            <input type="file" id="photo-input" accept="image/*" capture="environment" style="display:none;">
 
-            <!-- ✅ Previzualizare -->
+            <!-- ✅ Previzualizare foto -->
             <img id="photo-preview">
 
+            <!-- ✅ Salvare -->
             <button id="btn-save-obs" class="btn-blue2">💾 Salvează</button>
         </div>
 
     </div>
 </div>
 
-app.js</script>
+<script src="app.js"></script>
 
 <script>
 if ("serviceWorker" in navigator) {
