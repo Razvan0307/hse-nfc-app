@@ -1,15 +1,15 @@
 console.log("✅ WRITE.JS LOADED");
 
-// ✅ Verificare suport NFC
+// ✅ Verifică suport Web NFC pentru scriere
 function checkNFCSupport() {
-    if (!("NDEFWriter" in window)) {
-        alert("❌ Acest dispozitiv nu suportă scriere NFC (Android + Chrome necesar)");
+    if (!("NDEFReader" in window)) {
+        alert("❌ Acest dispozitiv NU suportă scriere NFC (necesar Android + Chrome)");
         return false;
     }
     return true;
 }
 
-// ✅ Validare text (opțional, pentru echipamente)
+// ✅ Validare prefix echipament
 function validateNFCText(text) {
     const prefixes = ["HAM_", "KIT_", "VESTA_", "STING_", "LOC_"];
     const ok = prefixes.some(p => text.startsWith(p));
@@ -20,37 +20,51 @@ function validateNFCText(text) {
     return true;
 }
 
-// ✅ SCRIERE TAG NFC
+// ✅ SCRIERE TAG — folosind NDEFReader (compatibilitate maximă)
 async function writeNFC(text) {
     try {
-        const writer = new NDEFWriter();
+        const writer = new NDEFReader();
 
-        // ✅ forma stabilă, compatibilă 100%
-        await writer.write(text);
+        await writer.write({
+            records: [
+                {
+                    recordType: "text",
+                    data: text
+                }
+            ]
+        });
 
         alert("✅ Tag scris cu succes!\nConținut: " + text);
-    } catch (err) {
-        console.error(err);
-        alert("❌ Eroare la scrierea tagului:\n" + err);
+
+    } catch (error) {
+        console.error("❌ Eroare la scriere:", error);
+        alert("❌ Eroare la scrierea tagului:\n" + error);
     }
 }
 
-// ✅ ȘTERGERE TAG NFC
+// ✅ ȘTERGERE TAG — golire payload
 async function eraseNFC() {
     try {
-        const writer = new NDEFWriter();
+        const writer = new NDEFReader();
 
-        // ✅ ștergere = scriere payload gol
-        await writer.write("");
+        await writer.write({
+            records: [
+                {
+                    recordType: "text",
+                    data: ""
+                }
+            ]
+        });
 
         alert("✅ Tag șters complet!");
-    } catch (err) {
-        console.error(err);
-        alert("❌ Eroare la ștergere:\n" + err);
+
+    } catch (error) {
+        console.error("❌ Eroare la ștergere:", error);
+        alert("❌ Eroare la ștergerea tagului:\n" + error);
     }
 }
 
-// ✅ EVENIMENT SCRIERE
+// ✅ Eveniment SCRIERE
 document.getElementById("writeButton").addEventListener("click", async () => {
     const text = document.getElementById("nfcText").value.trim();
 
@@ -58,7 +72,7 @@ document.getElementById("writeButton").addEventListener("click", async () => {
     if (!checkNFCSupport()) return;
     if (!validateNFCText(text)) return;
 
-    // ✅ Mesaj vizibil în UI
+    // Mesaj vizibil
     document.getElementById("statusBox").innerHTML = `
         <div style="
             padding:15px;
@@ -75,11 +89,12 @@ document.getElementById("writeButton").addEventListener("click", async () => {
     document.getElementById("statusBox").innerHTML = "";
 });
 
-// ✅ EVENIMENT ȘTERGERE
+// ✅ Eveniment ȘTERGERE
 document.getElementById("eraseButton").addEventListener("click", async () => {
+
     if (!checkNFCSupport()) return;
 
-    if (!confirm("⚠️ Sigur vrei să ȘTERGI complet tag-ul?")) return;
+    if (!confirm("⚠️ Sigur vrei să ștergi complet tag-ul?")) return;
 
     document.getElementById("statusBox").innerHTML = `
         <div style="
