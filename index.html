@@ -9,13 +9,14 @@
     <link rel="manifest" href="manifest.json">
 
     <style>
-        /* ✅ FUNDAL DP WORLD STYLE */
+        /* ✅ FUNDAL DEGRADE ALB → GRI → ALBASTRU → MOV */
         body {
             margin: 0;
             font-family: "Segoe UI", Arial, sans-serif;
-            background: linear-gradient(135deg, #4f46e5, #0ea5e9);
+            background: linear-gradient(180deg, #ffffff, #e9e9f7, #b6c8ff, #8f78ff);
             min-height: 100vh;
             padding-bottom: 30px;
+            background-attachment: fixed;
         }
 
         .container {
@@ -24,21 +25,21 @@
             padding: 20px;
         }
 
-        /* ✅ TITLU CU LOGO */
+        /* ✅ TITLU + LOGO DP WORLD */
         h1 {
             text-align: center;
-            font-size: 32px;
-            color: white;
+            font-size: 34px;
+            color: #1d4ed8;
             font-weight: 700;
-            margin-bottom: 20px;
+            margin-bottom: 28px;
             display:flex;
             justify-content:center;
             align-items:center;
-            gap:12px;
+            gap: 22px;
         }
 
         h1 img {
-            width: 60px;
+            width: 100px;
             height:auto;
         }
 
@@ -76,7 +77,6 @@
             font-size: 18px;
         }
 
-        /* ✅ LISTA */
         .equip-card {
             background: #ffffff;
             padding: 14px;
@@ -90,7 +90,7 @@
         #popup-bg {
             display:none;
             position:fixed;
-            top:0; left:0; width:100%; height:100%;
+            top:0100%;
             background:rgba(0,0,0,0.45);
             backdrop-filter: blur(4px);
             justify-content:center;
@@ -98,12 +98,15 @@
             z-index:9999;
         }
 
+        /* ✅ POPUP SCROLLABIL + ÎNĂLȚIME MAXIMĂ */
         #popup {
             background:white;
             padding:20px;
             border-radius:16px;
             width:90%;
             max-width:420px;
+            max-height: 80vh;       /* ✅ NU depășește ecranul */
+            overflow-y: auto;       /* ✅ Face scroll */
             box-shadow:0 4px 20px rgba(0,0,0,0.25);
             animation: fadeIn .2s ease-out;
         }
@@ -119,7 +122,7 @@
             cursor:pointer;
         }
 
-        /* ✅ PREVIEW FOTO */
+        /* ✅ FOTO PREVIEW */
         #photo-preview {
             display:none;
             width:100%;
@@ -138,9 +141,8 @@
 
 <div class="container">
 
-    <!-- ✅ TITLU CU LOGO -->
     <h1>
-        <img src="dpw.png" alt="DP World">
+        dpw.png
         HSE NFC Scan
     </h1>
 
@@ -149,7 +151,7 @@
 
         <button id="scanNFC" class="btn btn-blue">📡 Scanează NFC</button>
 
-        <a href="write.html">
+        write.html
             <button class="btn btn-green">✍️ Scrie NFC</button>
         </a>
 
@@ -160,7 +162,7 @@
         </p>
     </div>
 
-    <h2 style="font-size:22px; margin-top:25px; color:white;">Echipamente scanate:</h2>
+    <h2 style="font-size:22px; margin-top:25px; color:#333;">Echipamente scanate:</h2>
     <div id="lista"></div>
 
     <button id="showHistory" class="btn btn-blue" style="margin-top:20px;">
@@ -180,6 +182,7 @@
 <!-- ✅ POPUP COMPLET CU FOTO -->
 <div id="popup-bg">
     <div id="popup">
+
         <h3 style="text-align:center; font-size:22px; color:#1d4ed8;">
             Echipamentul este conform?
         </h3>
@@ -189,14 +192,17 @@
 
         <div id="popup-observatii" style="display:none; margin-top:12px;">
 
-            <textarea id="obs-text" rows="4" placeholder="Introduceți observațiile..."
+            <textarea id="obs-text" rows="4"
+                      placeholder="Introduceți observațiile..."
                       style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;"></textarea>
 
             <!-- ✅ Buton FOTO -->
             <button id="btn-photo" class="btn-blue2">📸 Adaugă fotografie (opțional)</button>
 
-            <!-- ✅ Input foto -->
-            <input type="file" id="photo-input" accept="image/*" capture="environment" style="display:none;">
+            <!-- ✅ Input camera FIX -->
+            <label style="opacity:0; position:absolute; left:-9999px;">
+                <input type="file" id="photo-input" accept="image/*" capture="environment">
+            </label>
 
             <!-- ✅ Previzualizare -->
             <img id="photo-preview">
@@ -205,10 +211,10 @@
             <button id="btn-save-obs" class="btn-blue2">💾 Salvează</button>
 
         </div>
+
     </div>
 </div>
 
-<!-- ✅ App logic -->
 <script src="app.js"></script>
 
 <script>
