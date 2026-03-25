@@ -3,97 +3,90 @@ console.log("✅ WRITE.JS LOADED");
 // ✅ Check NFC support
 function checkNFCSupport() {
     if (!("NDEFWriter" in window)) {
-        alert("❌ Acest dispozitiv NU suportă scriere NFC.\nFuncționează doar pe Android + Chrome.");
+        alert("❌ Acest dispozitiv NU suportă scriere NFC (Android + Chrome necesar)");
         return false;
     }
     return true;
 }
 
-// ✅ Validare prefixuri acceptate (opțional)
+// ✅ Validare prefix
 function validateNFCText(text) {
     const allowed = ["HAM_", "KIT_", "VESTA_", "STING_", "LOC_"];
     const ok = allowed.some(prefix => text.startsWith(prefix));
 
     if (!ok) {
-        return confirm(
-            "⚠️ Textul nu începe cu un prefix valid (HAM_, KIT_, VESTA_, STING_, LOC_).\n" +
-            "Sigur vrei să scrii acest text?"
-        );
+        return confirm("⚠️ Textul nu începe cu un prefix valid.\nContinui oricum?");
     }
     return true;
 }
 
-// ✅ SCRIERE NFC
+// ✅ SCRIERE
 async function writeNFC(text) {
     try {
         const writer = new NDEFWriter();
         await writer.write(text);
-
-        alert("✅ Tag scris cu succes!\n\nConținut: " + text);
-    } catch (err) {
-        console.error(err);
-        alert("❌ Eroare la scriere: " + err);
+        alert("✅ Tag scris cu succes!");
+    } catch (e) {
+        console.error(e);
+        alert("❌ Eroare la scriere: " + e);
     }
 }
 
-// ✅ ȘTERGERE NFC (scrie un mesaj gol)
+// ✅ ȘTERGERE
 async function eraseNFC() {
     try {
         const writer = new NDEFWriter();
-        await writer.write(""); // 🔥 scrie un payload gol, efectiv șterge tag-ul
-
-        alert("✅ Tag-ul a fost șters complet!");
-    } catch (err) {
-        console.error(err);
-        alert("❌ Eroare la ștergere: " + err);
+        await writer.write("");
+        alert("✅ Tag șters complet!");
+    } catch (e) {
+        console.error(e);
+        alert("❌ Eroare la ștergere: " + e);
     }
 }
 
-// ✅ HANDLER pentru SCRIERE TAG
+// ✅ Eveniment SCRIERE
 document.getElementById("writeButton").addEventListener("click", async () => {
     const text = document.getElementById("nfcText").value.trim();
 
-    if (!text) {
-        alert("⚠️ Introdu textul care va fi scris pe tag!");
-        return;
-    }
+    if (!text) return alert("⚠️ Introdu textul!");
 
     if (!checkNFCSupport()) return;
-
     if (!validateNFCText(text)) return;
 
     document.getElementById("statusBox").innerHTML = `
-        <div style="padding:15px; background:#e0e7ff; border-radius:12px;
-                    border-left:6px solid #1d4ed8; font-size:18px;">
-            📡 Apropie telefonul de tag pentru SCRIERE...
+        <div style="
+            padding:15px;
+            background:#e0e7ff;
+            border-left:6px solid #1d4ed8;
+            border-radius:12px;
+            font-size:18px;">
+            📡 Apropie telefonul de TAG pentru SCRIERE...
         </div>
     `;
 
     await writeNFC(text);
 
-    setTimeout(() => {
-        document.getElementById("statusBox").innerHTML = "";
-    }, 3000);
+    document.getElementById("statusBox").innerHTML = "";
 });
 
-// ✅ HANDLER pentru ȘTERGERE TAG
+// ✅ Eveniment ȘTERGERE
 document.getElementById("eraseButton").addEventListener("click", async () => {
     if (!checkNFCSupport()) return;
 
-    if (!confirm("⚠️ Sigur vrei să ștergi complet tag-ul NFC?\nAceastă acțiune nu poate fi anulată.")) {
-        return;
-    }
+    if (!confirm("⚠️ Sigur vrei să ȘTERGI complet tag-ul?")) return;
 
     document.getElementById("statusBox").innerHTML = `
-        <div style="padding:15px; background:#fee2e2; border-radius:12px;
-                    border-left:6px solid #dc2626; font-size:18px;">
-            🧹 Apropie telefonul de tag pentru ȘTERGERE...
+        <div style="
+            padding:15px;
+            background:#fee2e2;
+            border-left:6px solid #dc2626;
+            border-radius:12px;
+            font-size:18px;">
+            🧹 Apropie telefonul de TAG pentru ȘTERGERE...
         </div>
     `;
 
     await eraseNFC();
 
-    setTimeout(() => {
-        document.getElementById("statusBox").innerHTML = "";
-    }, 3000);
+    document.getElementById("statusBox").innerHTML = "";
 });
