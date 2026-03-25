@@ -9,11 +9,11 @@
     <link rel="manifest" href="manifest.json">
 
     <style>
-        /* ✅ FUNDAL DP WORLD STYLE */
+        /* ✅ FUNDAL DEGRADE DESCHIS (alb → gri) */
         body {
             margin: 0;
             font-family: "Segoe UI", Arial, sans-serif;
-            background: linear-gradient(135deg, #4f46e5, #0ea5e9);
+            background: linear-gradient(180deg, #ffffff, #f2f2f2);
             min-height: 100vh;
             padding-bottom: 30px;
         }
@@ -24,29 +24,30 @@
             padding: 20px;
         }
 
-        /* ✅ TITLU CU LOGO */
+        /* ✅ TITLU CU LOGO DP WORLD MAI MARE + SPAȚIERE */
         h1 {
             text-align: center;
-            font-size: 32px;
-            color: white;
+            font-size: 34px;
+            color: #1d4ed8;
             font-weight: 700;
-            margin-bottom: 20px;
+            margin-bottom: 28px;
             display:flex;
             justify-content:center;
             align-items:center;
-            gap:12px;
+            gap:20px;
         }
 
         h1 img {
-            width: 60px;
+            width: 80px;   /* ✅ LOGO MAI MARE */
             height:auto;
         }
 
+        /* ✅ CARD GENERAL */
         .card {
             background: white;
             padding: 20px;
             border-radius: 16px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.10);
             margin-bottom: 20px;
         }
 
@@ -63,10 +64,10 @@
             transition: 0.2s;
         }
 
-        .btn-blue { background: #1d4ed8; }
+        .btn-blue  { background: #1d4ed8; }
         .btn-green { background: #16a34a; }
         .btn-yellow { background: #f59e0b; }
-        .btn-red { background: #dc2626; }
+        .btn-red  { background: #dc2626; }
         .btn-red2 { background:#dc2626; }
         .btn-blue2 { background:#1d4ed8; }
 
@@ -76,7 +77,7 @@
             font-size: 18px;
         }
 
-        /* ✅ LISTA */
+        /* ✅ LISTA ECHIPAMENTE */
         .equip-card {
             background: #ffffff;
             padding: 14px;
@@ -119,7 +120,7 @@
             cursor:pointer;
         }
 
-        /* ✅ PREVIEW FOTO */
+        /* ✅ FOTO PREVIEW */
         #photo-preview {
             display:none;
             width:100%;
@@ -138,7 +139,7 @@
 
 <div class="container">
 
-    <!-- ✅ TITLU CU LOGO -->
+    <!-- ✅ LOGO DP + TITLU -->
     <h1>
         <img src="dpw.png" alt="DP World">
         HSE NFC Scan
@@ -160,12 +161,10 @@
         </p>
     </div>
 
-    <h2 style="font-size:22px; margin-top:25px; color:white;">Echipamente scanate:</h2>
+    <h2 style="font-size:22px; margin-top:25px; color:#333;">Echipamente scanate:</h2>
     <div id="lista"></div>
 
-    <button id="showHistory" class="btn btn-blue" style="margin-top:20px;">
-        📜 Arată istoricul echipamentului
-    </button>
+    <button id="showHistory" class="btn btn-blue">📜 Arată istoricul echipamentului</button>
 
     <div id="istoric" class="card" style="display:none; margin-top:15px;">
         <h3 style="margin-top:0;">Istoric echipament</h3>
@@ -180,6 +179,7 @@
 <!-- ✅ POPUP COMPLET CU FOTO -->
 <div id="popup-bg">
     <div id="popup">
+
         <h3 style="text-align:center; font-size:22px; color:#1d4ed8;">
             Echipamentul este conform?
         </h3>
@@ -189,26 +189,26 @@
 
         <div id="popup-observatii" style="display:none; margin-top:12px;">
 
-            <textarea id="obs-text" rows="4" placeholder="Introduceți observațiile..."
+            <textarea id="obs-text" rows="4"
+                      placeholder="Introduceți observațiile..."
                       style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;"></textarea>
 
             <!-- ✅ Buton FOTO -->
             <button id="btn-photo" class="btn-blue2">📸 Adaugă fotografie (opțional)</button>
 
-            <!-- ✅ Input foto -->
+            <!-- ✅ Input camera -->
             <input type="file" id="photo-input" accept="image/*" capture="environment" style="display:none;">
 
-            <!-- ✅ Previzualizare -->
+            <!-- ✅ Previzualizare foto -->
             <img id="photo-preview">
 
             <!-- ✅ Salvare -->
             <button id="btn-save-obs" class="btn-blue2">💾 Salvează</button>
-
         </div>
+
     </div>
 </div>
 
-<!-- ✅ App logic -->
 <script src="app.js"></script>
 
 <script>
