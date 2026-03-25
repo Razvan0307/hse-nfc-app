@@ -98,7 +98,7 @@ async function scanNFC() {
   isScanning = true;
 
   document.getElementById("scanStatus").style.display = "block";
-  document.getElementById("istoric").style.display = "none"; // ascundem vechiul istoric
+  document.getElementById("istoric").style.display = "none"; 
 
   try {
     const reader = new NDEFReader();
@@ -204,7 +204,8 @@ async function saveToSupabase(entry) {
 // ✅ SAVE HISTORY în echipamente_istoric
 //--------------------------------------------------
 async function saveToHistory(entry) {
-  await fetch(`${SUPABASE_URL}/rest/v1/echipamente_istoric`, {
+
+  const resp = await fetch(`${SUPABASE_URL}/rest/v1/echipamente_istoric`, {
     method: "POST",
     headers: {
       apikey: SUPABASE_KEY,
@@ -214,6 +215,18 @@ async function saveToHistory(entry) {
     },
     body: JSON.stringify(entry)
   });
+
+  if (resp.status === 204) {
+    console.log("✅ Istoric salvat (204 no content)");
+    return;
+  }
+
+  try {
+    const data = await resp.json();
+    console.log("✅ Istoric salvat:", data);
+  } catch {
+    console.log("✅ Istoric salvat fără body JSON");
+  }
 }
 
 //--------------------------------------------------
@@ -238,7 +251,6 @@ async function loadHistory(id) {
     return;
   }
 
-  // sortare descrescător
   data.sort((a, b) => new Date(b.data_scan) - new Date(a.data_scan));
 
   let html = "";
