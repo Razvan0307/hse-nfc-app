@@ -43,6 +43,7 @@
             resize: none;
             margin-top: 10px;
             box-sizing: border-box;
+            display: block;   /* ✅ împiedică ieșirea din card */
         }
 
         .btn {
@@ -52,7 +53,7 @@
             border: none;
             border-radius: 12px;
             cursor: pointer;
-            margin-top: 12px;
+            margin-top: 15px;
             color: white;
             font-weight: 600;
             transition: 0.2s;
@@ -86,15 +87,15 @@
                 Introduceți textul care va fi scris pe tag-ul NFC:
             </p>
 
-            <!-- ✅ TEXTAREA ALINIATĂ PERFECT -->
+            <!-- ✅ TEXTAREA CORECT POZIȚIONATĂ -->
             <textarea id="nfcText" rows="3" placeholder="Ex: HAM_001, LOC_Magazin, KIT_015"></textarea>
 
-            <!-- ✅ SCRIERE TAG -->
+            <!-- ✅ BUTON SCRIERE -->
             <button id="writeButton" class="btn btn-green">
                 ✅ Scrie pe tag NCR
             </button>
 
-            <!-- ✅ ȘTERGERE TAG -->
+            <!-- ✅ BUTON ȘTERGERE -->
             <button id="eraseButton" class="btn btn-red">
                 🧹 Șterge complet tag-ul
             </button>
@@ -105,7 +106,7 @@
             </a>
         </div>
 
-        <!-- ✅ Mesaj "Apropie telefonul" -->
+        <!-- ✅ Aici apare mesajul "Apropie telefonul..." -->
         <div id="statusBox"></div>
 
         <p style="text-align:center; color:#6b7280; font-size:14px; margin-top:20px;">
@@ -114,9 +115,8 @@
 
     </div>
 
-    <!-- ✅ TAG SCRIPT CORECT, FĂRĂ ERORI -->
+    <!-- ✅ SCRIPT CORECT, FĂRĂ TEXT ÎN PAGINĂ -->
     <script src="write.js"></script>
 
 </body>
 </html>
-``
