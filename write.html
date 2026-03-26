@@ -6,10 +6,21 @@
     <title>Scriere NFC</title>
 
     <style>
+        /* ✅ FUNDAL MODERN */
         body {
             margin: 0;
-            background: #f0f2f5;
+            background: linear-gradient(135deg,#ffffff,#e8e8ff,#c7ccff,#b79dff,#7e67ff);
+            background-size: 400% 400%;
+            animation: gradientFlow 18s ease infinite;
             font-family: "Segoe UI", Arial, sans-serif;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        @keyframes gradientFlow {
+            0% {background-position:0% 50%;}
+            50% {background-position:100% 50%;}
+            100% {background-position:0% 50%;}
         }
 
         .container {
@@ -18,60 +29,97 @@
             padding: 20px;
         }
 
-        .card {
-            background: white;
-            padding: 25px;
-            border-radius: 16px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-
+        /* ✅ TITLU MODERN */
         h1 {
             text-align: center;
-            font-size: 32px;
+            font-size: 34px;
             color: #1d4ed8;
-            font-weight: 700;
-            margin-bottom: 25px;
+            font-weight: 900;
+            margin-top: 25px;
+            text-shadow: 0 0 10px rgba(255,255,255,.7);
+            animation: fadeIn .5s ease-out;
+        }
+
+        /* ✅ CARD PREMIUM + SLIDE-UP */
+        .card {
+            background: rgba(255,255,255,0.88);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            margin-top: 20px;
+
+            animation: slideUp .35s ease-out;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes slideUp {
+            from {opacity:0; transform: translateY(25px);}
+            to   {opacity:1; transform: translateY(0);}
         }
 
         textarea {
             width: 100%;
             padding: 14px;
-            border-radius: 12px;
+            border-radius: 14px;
             border: 1px solid #ccc;
             font-size: 18px;
             resize: none;
             margin-top: 10px;
             box-sizing: border-box;
-            display: block;   /* ✅ împiedică ieșirea din card */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
         }
 
+        /* ✅ BUTOANE MODERNE */
         .btn {
             width: 100%;
             padding: 16px;
             font-size: 20px;
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             cursor: pointer;
             margin-top: 15px;
             color: white;
-            font-weight: 600;
-            transition: 0.2s;
+            font-weight: 700;
+            transition: .15s ease;
         }
 
-        .btn-green { background: #16a34a; }
-        .btn-green:hover { background: #0f7f38; }
+        .btn:active { transform: scale(0.95); }
 
-        .btn-red { background: #dc2626; }
-        .btn-red:hover { background: #a81e1e; }
+        .btn-green { background: #16a34a; box-shadow:0 4px 14px rgba(22,163,74,.35); }
+        .btn-red   { background: #dc2626; box-shadow:0 4px 14px rgba(220,38,38,.35); }
+        .btn-gray  { background: #6b7280; box-shadow:0 4px 14px rgba(107,114,128,.35); }
 
-        .btn-gray { background: #6b7280; }
-        .btn-gray:hover { background: #4b5563; }
+        a { text-decoration: none; }
 
-        a { text-decoration: none; display: block; }
-
+        /* ✅ LOADER */
         #statusBox {
-            margin-top: 20px;
+            margin-top: 22px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 800;
+            color:#1e40af;
+        }
+
+        .loader {
+            width: 38px;
+            height: 38px;
+            border: 4px solid #1e40af;
+            border-top-color: transparent;
+            border-radius: 50%;
+            margin: 10px auto;
+            animation: spin .7s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform:rotate(0deg); }
+            to   { transform:rotate(360deg); }
+        }
+
+        .note {
+            text-align:center;
+            margin-top:25px;
+            font-size:14px;
+            color:#555;
         }
     </style>
 </head>
@@ -80,43 +128,57 @@
 
     <div class="container">
 
-        <h1>✍️ Scriere Tag NCR</h1>
+        <h1>✍️ Scriere Tag NFC</h1>
 
         <div class="card">
-            <p style="font-size:18px;">
-                Introduceți textul care va fi scris pe tag-ul NFC:
+
+            <p style="font-size:18px; font-weight:600;">
+                Introdu textul pentru tag:
             </p>
 
-            <!-- ✅ TEXTAREA CORECT POZIȚIONATĂ -->
             <textarea id="nfcText" rows="3" placeholder="Ex: HAM_001, LOC_Magazin, KIT_015"></textarea>
 
-            <!-- ✅ BUTON SCRIERE -->
             <button id="writeButton" class="btn btn-green">
-                ✅ Scrie pe tag NCR
+                ✅ Scrie pe tag
             </button>
 
-            <!-- ✅ BUTON ȘTERGERE -->
             <button id="eraseButton" class="btn btn-red">
-                🧹 Șterge complet tag-ul
+                🧹 Șterge tag-ul
             </button>
 
-            <!-- ✅ ÎNAPOI LA SCANARE -->
             <a href="index.html">
-                <button class="btn btn-gray">⬅ Înapoi la scanare</button>
+                <button class="btn btn-gray">⬅ Înapoi</button>
             </a>
+
         </div>
 
-        <!-- ✅ Aici apare mesajul "Apropie telefonul..." -->
         <div id="statusBox"></div>
 
-        <p style="text-align:center; color:#6b7280; font-size:14px; margin-top:20px;">
-            *Scrierea și ștergerea NFC funcționează doar pe Android + Chrome*
+        <p class="note">
+            *Scrierea NFC funcționează doar pe Android + Chrome*
         </p>
 
     </div>
 
-    <!-- ✅ SCRIPT CORECT, FĂRĂ TEXT ÎN PAGINĂ -->
+    <!-- ✅ SCRIPT WRITE.JS (FUNCȚIONEAZĂ ACUM) -->
     <script src="write.js"></script>
+
+    <script>
+    /* ✅ Adăugăm loader animat la scriere */
+    document.getElementById("writeButton").addEventListener("click", () => {
+        statusBox.innerHTML = `
+            <div class="loader"></div>
+            Apropie telefonul de tag...
+        `;
+    });
+
+    document.getElementById("eraseButton").addEventListener("click", () => {
+        statusBox.innerHTML = `
+            <div class="loader"></div>
+            Ștergere tag...
+        `;
+    });
+    </script>
 
 </body>
 </html>
