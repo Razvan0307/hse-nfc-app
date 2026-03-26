@@ -79,15 +79,18 @@
 
         /* ✅ CARD */
         .card {
-            background: rgba(255,255,255,0.25);
-            padding: 22px;
-            border-radius: 24px;
-          box-shadow: 0 10px 28px rgba(0,0,0,0.18);
-            margin-bottom: 25px;
-            backdrop-filter: blur(8px);
-            backdrop-filter: blur(15px);
-             animation: fadeDown .45s ease-out;
-        }
+    background: rgba(255,255,255,0.9);
+    padding: 22px;
+    border-radius: 28px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    margin-top: 35px;
+    backdrop-filter: blur(12px);
+    animation: slideUp .4s ease-out;
+}
+@keyframes slideUp {
+    from { opacity:0; transform: translateY(30px); }
+    to   { opacity:1; transform: translateY(0); }
+}
 
         /* ✅ CARD-URI SCANATE */
         .equip-card {
