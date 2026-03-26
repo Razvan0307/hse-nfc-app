@@ -302,7 +302,7 @@ async function saveToSupabase(entry) {
         });
     }
 }
-    } else {
+     else {
         await fetch(`${SUPABASE_URL}/rest/v1/echipamente`, {
             method: "POST",
             headers: {
