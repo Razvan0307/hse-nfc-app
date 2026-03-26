@@ -200,32 +200,56 @@
 <div class="container">
 
     <!-- ✅ TITLU + LOGO -->
-    <div class="title-box">
- <img src="dpw.png" alt="DPW Logo">
-        <h1>NFC Scan</h1>
-    </div>
+  .title-box {
+    text-align:center;
+    background:rgba(255,255,255,0.25);
+    padding:26px;
+    border-radius:26px;
+    margin-top:25px;
+    margin-bottom:30px;
+    backdrop-filter:blur(15px);
+    box-shadow:0 10px 30px rgba(0,0,0,0.18);
+    animation:fadeDown .45s ease-out;
+}
+@keyframes fadeDown {
+    from {opacity:0; transform:translateY(-25px);}
+    to   {opacity:1; transform:translateY(0);}
+}
 
     <!-- ✅ CARD PRINCIPAL -->
-    <div class="card">
+    <div class=".card {
+    background:rgba(255,255,255,0.85);
+    padding:28px;
+    border-radius:28px;
+    backdrop-filter:blur(12px);
+    box-shadow:0 15px 36px rgba(0,0,0,0.20);
+    animation:slideUp .35s ease-out;
+}">
         <p><strong>Locația curentă:</strong> <span id="locatie">Nesetat</span></p>
 
         <!-- ✅ FAB NFC -->
         <div style="display:flex; flex-direction:column; align-items:center; margin-top:20px;">
             <button id="scanNFC"
-                style="
-                    width:120px;
-                    height:120px;
-                    background:#1d4ed8;
-                    border:none;
-                    border-radius:50%;
-                    display:flex;
-                    justify-content:center;
-                    align-items:center;
-                    font-size:52px;
-                    color:white;
-                    cursor:pointer;
-                    animation: fabPulse 2.4s infinite ease-in-out;
-                ">
+               #scanNFC {
+    width:135px;
+    height:135px;
+    border-radius:50%;
+    border:none;
+    background:radial-gradient(circle,#4F46E5,#312E81);
+    color:white;
+    font-size:60px;
+    cursor:pointer;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    box-shadow:0 0 40px rgba(79,70,229,0.6);
+    animation:floating 2.4s infinite ease-in-out;
+}
+@keyframes floating {
+    0%   {transform:scale(1) translateY(0);}
+    50%  {transform:scale(1.08) translateY(-6px);}
+    100% {transform:scale(1) translateY(0);}
+}
                 📡
             </button>
 
