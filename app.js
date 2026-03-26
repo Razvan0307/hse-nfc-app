@@ -256,6 +256,16 @@ async function scanNFC() {
 // SAVE / UPDATE ECHIPAMENTE
 //--------------------------------------------------
 async function saveToSupabase(entry) {
+
+    // ✅ Curățăm ID-ul ca să eliminăm caracterele ascunse
+    entry.id_echipament = entry.id_echipament
+        .replace(/\0/g, "")
+        .replace(/\r/g, "")
+        .replace(/\n/g, "")
+        .replace(/\t/g, "")
+        .trim();
+
+    // ✅ CORECT — folosim & (nu &amp;)
     const checkUrl = `${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}&select=*`;
 
     const existing = await fetch(checkUrl, {
@@ -266,6 +276,7 @@ async function saveToSupabase(entry) {
     }).then(r => r.json());
 
     if (existing.length > 0) {
+        // ✅ PATCH corect
         await fetch(`${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}`, {
             method: "PATCH",
             headers: {
@@ -276,6 +287,21 @@ async function saveToSupabase(entry) {
             },
             body: JSON.stringify(entry)
         });
+
+    } else {
+        // ✅ INSERT corect
+        await fetch(`${SUPABASE_URL}/rest/v1/echipamente`, {
+            method: "POST",
+            headers: {
+                apikey: SUPABASE_KEY,
+                Authorization: `Bearer ${SUPABASE_KEY}`,
+                "Content-Type": "application/json",
+                Prefer: "return=representation"
+            },
+            body: JSON.stringify(entry)
+        });
+    }
+}
     } else {
         await fetch(`${SUPABASE_URL}/rest/v1/echipamente`, {
             method: "POST",
