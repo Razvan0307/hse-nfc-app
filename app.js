@@ -256,19 +256,8 @@ async function scanNFC() {
 // SAVE / UPDATE ECHIPAMENTE
 //--------------------------------------------------
 async function saveToSupabase(entry) {
-
-    // ✅ Curățăm ID-ul ca să nu conțină newline sau caractere ascunse
-    entry.id_echipament = entry.id_echipament
-        .replace(/\0/g, "")
-        .replace(/\r/g, "")
-        .replace(/\n/g, "")
-        .replace(/\t/g, "")
-        .trim();
-
-    // ✅ URL CORECT — folosim & (nu &amp;)
     const checkUrl = `${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}&select=*`;
 
-    // ✅ Verificăm dacă există deja echipamentul
     const existing = await fetch(checkUrl, {
         headers: {
             apikey: SUPABASE_KEY,
@@ -276,10 +265,7 @@ async function saveToSupabase(entry) {
         }
     }).then(r => r.json());
 
-
-    // ✅ Dacă există → facem UPDATE
     if (existing.length > 0) {
-
         await fetch(`${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}`, {
             method: "PATCH",
             headers: {
@@ -290,12 +276,7 @@ async function saveToSupabase(entry) {
             },
             body: JSON.stringify(entry)
         });
-
-    } 
-
-    // ✅ Dacă NU există → facem INSERT
-    else {
-
+    } else {
         await fetch(`${SUPABASE_URL}/rest/v1/echipamente`, {
             method: "POST",
             headers: {
@@ -306,6 +287,146 @@ async function saveToSupabase(entry) {
             },
             body: JSON.stringify(entry)
         });
-
     }
+}
+
+//--------------------------------------------------
+// ADD CARD (fără poze — varianta A)
+//--------------------------------------------------
+function addCard(entry) {
+    const lista = document.getElementById("lista");
+    const card = document.createElement("div");
+    card.className = "equip-card";
+
+    card.innerHTML = `
+        <div class="equip-id">🧰 ${entry.idDisplay}</div>
+        <div class="equip-loc">📍 ${entry.locatie}</div>
+        <div class="equip-time">⏱ ${entry.data_scan}</div>
+        <div class="equip-status">Stare: ${entry.stare}</div>
+        ${entry.observatii ? `<div class="equip-status">✏️ Observații: ${entry.observatii}</div>` : ""}
+    `;
+
+    lista.prepend(card);
+}
+
+//--------------------------------------------------
+// SAVE HISTORY (cu poza)
+//--------------------------------------------------
+async function saveToHistory(entry) {
+    const payload = {
+        id_echipament: entry.id_echipament,
+        locatie: entry.locatie,
+        stare: entry.stare,
+        observatii: entry.observatii,
+        poza: entry.poza || null,
+        data_scan: entry.data_scan
+    };
+
+    const resp = await fetch(`${SUPABASE_URL}/rest/v1/echipamente_istoric`, {
+        method: "POST",
+        headers: {
+            apikey: SUPABASE_KEY,
+            Authorization: `Bearer ${SUPABASE_KEY}`,
+            "Content-Type": "application/json",
+            Prefer: "return=representation"
+        },
+        body: JSON.stringify(payload)
+    });
+
+    if (!resp.ok) {
+        console.error("❌ EROARE SUPABASE HISTORIC:", await resp.text());
+    }
+}
+
+//--------------------------------------------------
+// LOAD HISTORY (afișează IMAGINEA + icon foto + fullscreen)
+//--------------------------------------------------
+async function loadHistory(id) {
+
+    const box = document.getElementById("istoric");
+    const content = document.getElementById("istoricContent");
+
+    box.style.display = "block";
+    content.innerHTML = "<p>Se încarcă istoricul...</p>";
+
+    const url = `${SUPABASE_URL}/rest/v1/echipamente_istoric?id_echipament=eq.${id}&select=*`;
+
+    const data = await fetch(url, {
+        headers: {
+            apikey: SUPABASE_KEY,
+            Authorization: `Bearer ${SUPABASE_KEY}`
+        }
+    }).then(r => r.json());
+
+    if (!data || data.length === 0) {
+        content.innerHTML = "<p>Nu există istoric.</p>";
+        return;
+    }
+
+    data.sort((a, b) => new Date(b.data_scan) - new Date(a.data_scan));
+
+    let html = "";
+
+    data.forEach(item => {
+
+        html += `
+        <div class="equip-card history-card" 
+             data-photo="${item.poza || ""}"
+             style="border-left: 6px solid ${item.stare === 'conform' ? '#16a34a' : '#dc2626'};">
+            
+            <div class="equip-id">🧰 ${item.id_echipament.replace(/^\w+_/, "")}</div>
+            <div class="equip-loc">📍 ${item.locatie}</div>
+            <div class="equip-time">⏱ ${item.data_scan}</div>
+            <div class="equip-status">Stare: ${item.stare}</div>
+
+            ${item.observatii ? `<div class="equip-status">✏️ Observații: ${item.observatii}</div>` : ""}
+
+            ${item.poza 
+                ? `<div class="equip-status">📷 Fotografie disponibilă</div>
+                   <img src="${item.poza}" class="history-photo" style="width:100%;margin-top:10px;border-radius:12px;">`
+                : ""
+            }
+        </div>
+        `;
+    });
+
+    content.innerHTML = html;
+}
+
+//--------------------------------------------------
+// CLICK PE CARD ISTORIC → FULLSCREEN FOTO
+//--------------------------------------------------
+document.addEventListener("click", (e) => {
+    const card = e.target.closest(".history-card");
+    if (!card) return;
+
+    const url = card.dataset.photo;
+    if (!url) return;
+
+    const full = document.getElementById("fullscreen-bg");
+    const img = document.getElementById("fullscreen-img");
+
+    img.src = url;
+    full.style.display = "flex";
+});
+
+//--------------------------------------------------
+// EXPORT CSV
+//--------------------------------------------------
+function exportCSV() {
+    let csv = "ID,Tip,Locatie,Stare,DataScan,Observatii\n";
+
+    const cards = document.querySelectorAll(".equip-card");
+    cards.forEach(card => {
+        const lines = card.innerText.split("\n");
+        csv += `${lines[0]},${lines[1]},${lines[2]},${lines[3]},${lines[4] || ""}\n`;
+    });
+
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "echipamente_export.csv";
+    a.click();
 }
