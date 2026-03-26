@@ -345,11 +345,12 @@ async function loadHistory(id) {
     box.style.display = "block";
 
     // ✅ skeleton loader (3 carduri)
-    content.innerHTML = `
-        <div class="skeleton"></div>
-        <div class="skeleton"></div>
-        <div class="skeleton"></div>
-    `;
+    
+content.innerHTML = `
+   <div class="skeleton-card"></div>
+   <div class="skeleton-card"></div>
+ 
+
 
     const url = `${SUPABASE_URL}/rest/v1/echipamente_istoric?id_echipament=eq.${id}&select=*`;
     const data = await fetch(url, {
