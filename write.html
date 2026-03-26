@@ -1,190 +1,122 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Scriere NFC</title>
 
     <style>
-        /* ✅ FUNDAL ANIMAT (same design as index.html) */
         body {
             margin: 0;
+            background: #f0f2f5;
             font-family: "Segoe UI", Arial, sans-serif;
-            background: linear-gradient(135deg,#ffffff,#e8e8ff,#c7ccff,#b79dff,#7e67ff);
-            background-size: 400% 400%;
-            animation: bgFlow 18s ease infinite;
-            min-height: 100vh;
-            overflow-x: hidden;
-            padding-bottom: 40px;
-        }
-        @keyframes bgFlow {
-            0%{background-position:0% 50%;}
-            50%{background-position:100% 50%;}
-            100%{background-position:0% 50%;}
         }
 
-        /* ✅ CENTER CONTAINER */
         .container {
             max-width: 650px;
             margin: auto;
             padding: 20px;
         }
 
-        /* ✅ TITLU MODERN */
-        .title-box {
-            text-align:center;
-            margin-top:25px;
-            animation: fadeIn .4s ease-out;
-        }
-        .title-icon {
-            font-size:64px;
-            margin-bottom:8px;
-            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.3));
-        }
-        h1 {
-            font-size:36px;
-            font-weight:900;
-            margin:0;
-            color:#1d4ed8;
-            text-shadow:0 0 10px rgba(255,255,255,0.7);
-        }
-
-        /* ✅ CARD GLASSMORPHISM + SLIDE-UP */
         .card {
-            background: rgba(255,255,255,0.85);
-            padding:22px;
-            border-radius:24px;
-            box-shadow:0 8px 28px rgba(0,0,0,0.18);
-            backdrop-filter: blur(14px);
-            animation: slideUp .35s ease-out;
-        }
-        @keyframes slideUp {
-            from {opacity:0; transform:translateY(25px);}
-            to   {opacity:1; transform:translateY(0);}
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
         }
 
-        /* ✅ TEXT SIMPLIFICAT */
-        .info {
-            font-size:18px;
-            font-weight:600;
-            margin-bottom:10px;
+        h1 {
+            text-align: center;
+            font-size: 32px;
+            color: #1d4ed8;
+            font-weight: 700;
+            margin-bottom: 25px;
         }
 
-        /* ✅ TEXTAREA MODERNĂ */
         textarea {
-            width:100%;
-            padding:16px;
-            font-size:19px;
-            border-radius:16px;
-            border:1px solid #ccc;
-            background:white;
-            resize:none;
-            box-sizing:border-box;
-            box-shadow:0 4px 12px rgba(0,0,0,0.10);
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+            font-size: 18px;
+            resize: none;
+            margin-top: 10px;
+            box-sizing: border-box;
+            display: block;   /* ✅ împiedică ieșirea din card */
         }
 
-        /* ✅ BUTOANE PREMIUM */
         .btn {
-            width:100%;
-            padding:17px;
-            margin-top:16px;
-            border:none;
-            border-radius:18px;
-            font-size:20px;
-            font-weight:800;
-            color:white;
-            cursor:pointer;
-            transition:0.15s ease;
+            width: 100%;
+            padding: 16px;
+            font-size: 20px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 15px;
+            color: white;
+            font-weight: 600;
+            transition: 0.2s;
         }
-        .btn-green {background:#16a34a; box-shadow:0 4px 14px rgba(22,163,74,.35);}
-        .btn-red   {background:#dc2626; box-shadow:0 4px 14px rgba(220,38,38,.35);}
-        .btn-gray  {background:#6b7280; box-shadow:0 4px 14px rgba(107,114,128,.35);}
-        .btn:active {transform:scale(.94);}
 
-        /* ✅ LOADER ANIMAT */
+        .btn-green { background: #16a34a; }
+        .btn-green:hover { background: #0f7f38; }
+
+        .btn-red { background: #dc2626; }
+        .btn-red:hover { background: #a81e1e; }
+
+        .btn-gray { background: #6b7280; }
+        .btn-gray:hover { background: #4b5563; }
+
+        a { text-decoration: none; display: block; }
+
         #statusBox {
-            text-align:center;
-            margin-top:25px;
-            font-weight:800;
-            font-size:18px;
-            color:#1e40af;
+            margin-top: 20px;
         }
-        .loader {
-            width:36px;
-            height:36px;
-            border:4px solid #1e40af;
-            border-top-color:transparent;
-            border-radius:50%;
-            margin:10px auto;
-            animation:spin .7s linear infinite;
-        }
-        @keyframes spin {
-            from{transform:rotate(0deg);}
-            to{transform:rotate(360deg);}
-        }
-
-        .note {
-            text-align:center;
-            font-size:14px;
-            color:#555;
-            margin-top:25px;
-        }
-
-        @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
     </style>
 </head>
 
 <body>
 
-<div class="container">
+    <div class="container">
 
-    <!-- ✅ TITLU MODERN -->
-    <div class="title-box">
-        <div class="title-icon">✍️</div>
-        <h1>Scriere Tag NFC</h1>
+        <h1>✍️ Scriere Tag NCR</h1>
+
+        <div class="card">
+            <p style="font-size:18px;">
+                Introduceți textul care va fi scris pe tag-ul NFC:
+            </p>
+
+            <!-- ✅ TEXTAREA CORECT POZIȚIONATĂ -->
+            <textarea id="nfcText" rows="3" placeholder="Ex: HAM_001, LOC_Magazin, KIT_015"></textarea>
+
+            <!-- ✅ BUTON SCRIERE -->
+            <button id="writeButton" class="btn btn-green">
+                ✅ Scrie pe tag NCR
+            </button>
+
+            <!-- ✅ BUTON ȘTERGERE -->
+            <button id="eraseButton" class="btn btn-red">
+                🧹 Șterge complet tag-ul
+            </button>
+
+            <!-- ✅ ÎNAPOI LA SCANARE -->
+            <a href="index.html">
+                <button class="btn btn-gray">⬅ Înapoi la scanare</button>
+            </a>
+        </div>
+
+        <!-- ✅ Aici apare mesajul "Apropie telefonul..." -->
+        <div id="statusBox"></div>
+
+        <p style="text-align:center; color:#6b7280; font-size:14px; margin-top:20px;">
+            *Scrierea și ștergerea NFC funcționează doar pe Android + Chrome*
+        </p>
+
     </div>
 
-    <!-- ✅ CARD SCRIERE -->
-    <div class="card">
-
-        <div class="info">Introduceți textul pentru tag:</div>
-
-        <textarea id="nfcText" rows="3" placeholder="Ex: HAM_001 · LOC_Depozit · KIT_15"></textarea>
-
-        <button id="writeButton" class="btn btn-green">✅ Scrie pe Tag</button>
-        <button id="eraseButton" class="btn btn-red">🧹 Șterge Tag-ul</button>
-
-        index.html<button class="btn btn-gray">⬅ Înapoi</button></a>
-
-    </div>
-
-    <!-- ✅ STATUS / ANIMAȚIE -->
-    <div id="statusBox"></div>
-
-    <p class="note">*Funcționează doar pe Android + Chrome*</p>
-
-</div>
-
-<!-- ✅ write.js -->
-write.js</script>
-
-<script>
-/* ✅ Animatie + Loader la scriere */
-document.getElementById("writeButton").addEventListener("click", () => {
-    document.getElementById("statusBox").innerHTML = `
-        <div class="loader"></div>
-        <div>Approach the NFC tag...</div>
-    `;
-});
-
-/* ✅ Animatie + Loader la ștergere */
-document.getElementById("eraseButton").addEventListener("click", () => {
-    document.getElementById("statusBox").innerHTML = `
-        <div class="loader"></div>
-        <div>Ștergere tag...</div>
-    `;
-});
-</script>
+    <!-- ✅ SCRIPT CORECT, FĂRĂ TEXT ÎN PAGINĂ -->
+    <script src="write.js"></script>
 
 </body>
 </html>
