@@ -195,29 +195,47 @@
         <p><strong>Locația curentă:</strong> <span id="locatie">Nesetat</span></p>
 
         <!-- ✅ FAB BUTTON – CENTRAT SUB CARD -->
-        <div style="display:flex; justify-content:center; margin-top:15px;">
+        <!-- ✅ FAB BUTTON MODERN -->
+<div style="display:flex; flex-direction:column; align-items:center; margin-top:25px;">
+
     <button id="scanNFC"
         style="
-            width:160px;
-            height:160px;
+            width:120px;
+            height:120px;
             background:#1d4ed8;
             border:none;
             border-radius:50%;
             display:flex;
             justify-content:center;
             align-items:center;
-            font-size:38px;
+            font-size:50px;
             color:white;
-            box-shadow:0 0 22px rgba(29,78,216,0.6);
+            box-shadow:0 0 25px rgba(29,78,216,0.55);
             cursor:pointer;
+            animation: fabPulse 2.2s infinite ease-in-out;
         ">
         📡
     </button>
+
+    <span style="
+        margin-top:10px;
+        font-size:20px;
+        font-weight:700;
+        color:#1d4ed8;
+        text-shadow:0 0 6px rgba(255,255,255,0.6);
+    ">
+        Scan NFC
+    </span>
 </div>
 
-<p style="text-align:center; font-size:18px; color:white; font-weight:600; margin-top:8px;">
-    Scan NFC
-</p>
+<!-- ✅ ANIMAȚIE PULSE -->
+<style>
+@keyframes fabPulse {
+    0%   { transform: scale(1);   box-shadow:0 0 18px rgba(29,78,216,0.45); }
+    50%  { transform: scale(1.09); box-shadow:0 0 30px rgba(29,78,216,0.75); }
+    100% { transform: scale(1);   box-shadow:0 0 18px rgba(29,78,216,0.45); }
+}
+</style>
 
         <a href="write.html">
             <button class="btn btn-green">✍️ Scrie NFC</button>
