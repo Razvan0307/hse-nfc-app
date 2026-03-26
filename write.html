@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Scriere NFC</title>
 
-    <!-- ✅ Elimină eroarea favicon.ico 404 -->
-    <link rel="icon" href="data:,">
+    <!-- ✅ Elimină eroarea favicon 404 complet -->
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 
     <style>
-        /* ✅ FUNDAL PREMIUM CU ANIMAȚIE */
+        /* ✅ FUNDAL PREMIUM ANIMAT */
         body {
             margin: 0;
             background: linear-gradient(135deg,#ffffff,#e8e8ff,#c7ccff,#b79dff,#7e67ff);
@@ -19,7 +19,6 @@
             min-height: 100vh;
             padding-bottom: 40px;
         }
-
         @keyframes bgFlow {
             0% {background-position:0% 50%;}
             50% {background-position:100% 50%;}
@@ -32,21 +31,21 @@
             padding: 20px;
         }
 
-        /* ✅ TITLU MODERN + GAP MARE */
+        /* ✅ TITLU + GAP MARE */
         h1 {
             text-align: center;
             font-size: 38px;
             color: #1d4ed8;
             font-weight: 900;
-            margin-top: 45px;        /* <<< gap mărit */
-            margin-bottom: 35px;     /* <<< gap mărit */
-            text-shadow: 0 0 12px rgba(255,255,255,0.9);
+            margin-top: 70px;     /* <<< GAP MARE */
+            margin-bottom: 45px;  /* <<< GAP MARE */
+            text-shadow:0 0 12px rgba(255,255,255,0.9);
             animation: fadeIn .5s ease-out;
         }
 
         @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
 
-        /* ✅ CARD MODERN + ANIMAȚIE */
+        /* ✅ CARD PREMIUM + SLIDE-UP */
         .card {
             background: rgba(255,255,255,0.92);
             padding: 28px;
@@ -55,19 +54,18 @@
             backdrop-filter: blur(12px);
             animation: slideUp .35s ease-out;
         }
-
         @keyframes slideUp {
             from {opacity:0; transform: translateY(35px);}
             to   {opacity:1; transform: translateY(0);}
         }
 
-        /* ✅ TEXT MAI FRUMOS + CENTRAT */
+        /* ✅ TEXT MODERN CENTRAT */
         .info {
+            text-align:center;
             font-size:20px;
             font-weight:700;
-            text-align:center;
-            margin-bottom:15px;
             color:#1e40af;
+            margin-bottom:15px;
         }
 
         textarea {
@@ -86,15 +84,15 @@
         /* ✅ BUTOANE PREMIUM */
         .btn {
             width: 100%;
-            padding: 18px;
-            font-size: 21px;
+            padding: 17px;
+            font-size: 20px;
             border: none;
             border-radius: 16px;
             cursor: pointer;
             margin-top: 18px;
             color: white;
             font-weight: 800;
-            transition:0.15s ease;
+            transition: .15s ease;
         }
         .btn:active { transform:scale(.94); }
 
@@ -111,6 +109,7 @@
             font-size:18px;
             font-weight:800;
             color:#1e40af;
+            min-height: 80px;
         }
 
         .loader {
@@ -127,13 +126,13 @@
             to   {transform:rotate(360deg);}
         }
 
-        /* ✅ SUCCES ANIMAT */
+        /* ✅ SUCCES ANIMAT PREMIUM */
         .success-animation {
-            margin-top:20px;
+            margin-top:10px;
             display:flex;
             flex-direction:column;
             align-items:center;
-            animation: fadeIn .4s ease-out;
+            animation: fadeIn .5s ease-out;
         }
 
         .success-circle {
@@ -144,18 +143,17 @@
             display:flex;
             justify-content:center;
             align-items:center;
-            box-shadow:0 0 20px rgba(22,163,74,0.65);
-            animation: pop .25s ease-out;
+            box-shadow:0 0 28px rgba(22,163,74,0.7);
+            animation: pop .32s ease-out;
         }
-
         @keyframes pop {
             0% {transform:scale(0.4);}
-            70% {transform:scale(1.18);}
+            75% {transform:scale(1.22);}
             100% {transform:scale(1);}
         }
 
         .success-check {
-            font-size:55px;
+            font-size:58px;
             color:white;
         }
 
@@ -164,90 +162,85 @@
             font-size:24px;
             font-weight:900;
             color:#16a34a;
-            text-shadow:0 0 6px rgba(255,255,255,0.7);
+            text-shadow:0 0 8px rgba(255,255,255,0.8);
         }
 
-        /* ✅ NOTE */
         .note {
             text-align:center;
             margin-top:25px;
             font-size:14px;
-            color:#555;
+            color:#444;
         }
-
     </style>
 </head>
 
 <body>
 
-    <div class="container">
+<div class="container">
 
-        <h1>✍️ Scriere Tag NFC</h1>
+    <h1>✍️ Scriere Tag NFC</h1>
 
-        <div class="card">
+    <div class="card">
 
-            <div class="info">Introduceți datele pentru scriere:</div>
+        <div class="info">Introduceți datele pentru scrierea tag‑ului:</div>
 
-            <textarea id="nfcText" rows="3" placeholder="Ex: HAM_001 · KIT_015 · LOC_Depozit"></textarea>
+        <textarea id="nfcText" rows="3" placeholder="Ex: HAM_001 · KIT_015 · LOC_Depozit"></textarea>
 
-            <button id="writeButton" class="btn btn-green">✅ Scrie pe tag</button>
+        <button id="writeButton" class="btn btn-green">✅ Scrie pe tag</button>
 
-            <button id="eraseButton" class="btn btn-red">🧹 Șterge tag-ul</button>
+        <button id="eraseButton" class="btn btn-red">🧹 Șterge tag-ul</button>
 
-            index.html<button class="btn btn-gray">⬅ Înapoi</button></a>
-        </div>
-
-        <div id="statusBox"></div>
-
-        <p class="note">*Scriere NFC disponibilă doar pe Android + Chrome*</p>
-
+        index.html<button class="btn btn-gray">⬅ Înapoi la scanare</button></a>
     </div>
 
-    write.js</script>
+    <div id="statusBox"></div>
 
-    <script>
-    /* ✅ Loader + succes animat */
+    <p class="note">*Scriere NFC disponibilă doar pe Android + Chrome*</p>
 
-    const statusBox = document.getElementById("statusBox");
+</div>
 
-    document.getElementById("writeButton").addEventListener("click", () => {
+<script src="write.js"></script>
 
+<script>
+/* ✅ Loader + succes animat */
+const statusBox = document.getElementById("statusBox");
+
+document.getElementById("writeButton").addEventListener("click", () => {
+    statusBox.innerHTML = `
+        <div class="loader"></div>
+        Apropie telefonul de tag...
+    `;
+
+    setTimeout(() => {
         statusBox.innerHTML = `
-            <div class="loader"></div>
-            Apropie telefonul de tag...
-        `;
-
-        setTimeout(() => {
-            statusBox.innerHTML = `
-                <div class="success-animation">
-                    <div class="success-circle">
-                        <div class="success-check">✅</div>
-                    </div>
-                    <div class="success-text">Scriere reușită!</div>
+            <div class="success-animation">
+                <div class="success-circle">
+                    <div class="success-check">✅</div>
                 </div>
-            `;
-        }, 2000);
-    });
+                <div class="success-text">Scriere reușită!</div>
+            </div>
+        `;
+    }, 2000);
+});
 
-    document.getElementById("eraseButton").addEventListener("click", () => {
+document.getElementById("eraseButton").addEventListener("click", () => {
+    statusBox.innerHTML = `
+        <div class="loader"></div>
+        Ștergere tag...
+    `;
 
+    setTimeout(() => {
         statusBox.innerHTML = `
-            <div class="loader"></div>
-            Ștergere tag...
-        `;
-
-        setTimeout(() => {
-            statusBox.innerHTML = `
-                <div class="success-animation">
-                    <div class="success-circle">
-                        <div class="success-check">✅</div>
-                    </div>
-                    <div class="success-text">Tag șters!</div>
+            <div class="success-animation">
+                <div class="success-circle">
+                    <div class="success-check">✅</div>
                 </div>
-            `;
-        }, 2000);
-    });
-    </script>
+                <div class="success-text">Tag șters!</div>
+            </div>
+        `;
+    }, 2000);
+});
+</script>
 
 </body>
 </html>
