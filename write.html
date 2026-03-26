@@ -1,134 +1,136 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scriere NFC</title>
 
     <style>
-        /* ✅ Fundal animat */
+        /* ✅ FUNDAL ANIMAT (same design as index.html) */
         body {
             margin: 0;
             font-family: "Segoe UI", Arial, sans-serif;
-            background: linear-gradient(135deg, #ffffff, #e8e8ff, #c7ccff, #b79dff, #7e67ff);
+            background: linear-gradient(135deg,#ffffff,#e8e8ff,#c7ccff,#b79dff,#7e67ff);
             background-size: 400% 400%;
-            animation: gradientMove 18s ease infinite;
+            animation: bgFlow 18s ease infinite;
             min-height: 100vh;
+            overflow-x: hidden;
             padding-bottom: 40px;
         }
-        @keyframes gradientMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        @keyframes bgFlow {
+            0%{background-position:0% 50%;}
+            50%{background-position:100% 50%;}
+            100%{background-position:0% 50%;}
         }
 
-        /* ✅ Container + titlu */
+        /* ✅ CENTER CONTAINER */
         .container {
             max-width: 650px;
             margin: auto;
             padding: 20px;
         }
 
-        .title {
+        /* ✅ TITLU MODERN */
+        .title-box {
             text-align:center;
             margin-top:25px;
             animation: fadeIn .4s ease-out;
         }
         .title-icon {
-            font-size:60px;
-            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.25));
+            font-size:64px;
+            margin-bottom:8px;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.3));
         }
         h1 {
-            margin-top: 10px;
-            font-size: 34px;
-            font-weight: 900;
+            font-size:36px;
+            font-weight:900;
+            margin:0;
             color:#1d4ed8;
-            text-shadow:0 0 10px rgba(255,255,255,.65);
+            text-shadow:0 0 10px rgba(255,255,255,0.7);
         }
 
-        /* ✅ Card principal modern + slide-up */
+        /* ✅ CARD GLASSMORPHISM + SLIDE-UP */
         .card {
-            background: rgba(255,255,255,0.9);
-            padding: 24px;
-            border-radius: 22px;
-            box-shadow: 0 8px 25px rgba(0,0,0,.18);
-            backdrop-filter: blur(12px);
+            background: rgba(255,255,255,0.85);
+            padding:22px;
+            border-radius:24px;
+            box-shadow:0 8px 28px rgba(0,0,0,0.18);
+            backdrop-filter: blur(14px);
             animation: slideUp .35s ease-out;
         }
         @keyframes slideUp {
-            0% { opacity:0; transform: translateY(25px); }
-            100% { opacity:1; transform: translateY(0); }
+            from {opacity:0; transform:translateY(25px);}
+            to   {opacity:1; transform:translateY(0);}
         }
 
-        /* ✅ Text simplificat */
+        /* ✅ TEXT SIMPLIFICAT */
         .info {
             font-size:18px;
             font-weight:600;
-            margin-bottom:12px;
+            margin-bottom:10px;
         }
 
-        /* ✅ Textarea premium */
+        /* ✅ TEXTAREA MODERNĂ */
         textarea {
             width:100%;
             padding:16px;
-            border-radius:14px;
+            font-size:19px;
+            border-radius:16px;
             border:1px solid #ccc;
-            resize:none;
-            font-size:18px;
-            box-sizing:border-box;
             background:white;
-            box-shadow:0 4px 12px rgba(0,0,0,.08);
+            resize:none;
+            box-sizing:border-box;
+            box-shadow:0 4px 12px rgba(0,0,0,0.10);
         }
 
-        /* ✅ Butoane moderne */
+        /* ✅ BUTOANE PREMIUM */
         .btn {
             width:100%;
-            padding:16px;
-            border:none;
-            border-radius:16px;
-            font-size:20px;
-            font-weight:800;
-            cursor:pointer;
-            color:white;
+            padding:17px;
             margin-top:16px;
-            transition:.15s ease;
-        }
-        .btn:active { transform:scale(.94); }
-
-        .btn-green  { background:#16a34a; box-shadow:0 4px 14px rgba(22,163,74,.35); }
-        .btn-red    { background:#dc2626; box-shadow:0 4px 14px rgba(220,38,38,.35); }
-        .btn-gray   { background:#6b7280; box-shadow:0 4px 14px rgba(107,114,128,.35); }
-
-        /* ✅ Loader animat */
-        #statusBox {
-            margin-top:25px;
-            text-align:center;
+            border:none;
+            border-radius:18px;
             font-size:20px;
             font-weight:800;
+            color:white;
+            cursor:pointer;
+            transition:0.15s ease;
+        }
+        .btn-green {background:#16a34a; box-shadow:0 4px 14px rgba(22,163,74,.35);}
+        .btn-red   {background:#dc2626; box-shadow:0 4px 14px rgba(220,38,38,.35);}
+        .btn-gray  {background:#6b7280; box-shadow:0 4px 14px rgba(107,114,128,.35);}
+        .btn:active {transform:scale(.94);}
+
+        /* ✅ LOADER ANIMAT */
+        #statusBox {
+            text-align:center;
+            margin-top:25px;
+            font-weight:800;
+            font-size:18px;
             color:#1e40af;
         }
         .loader {
-            width: 38px;
-            height: 38px;
-            border: 4px solid #1e40af;
-            border-top-color: transparent;
-            border-radius: 50%;
-            margin: 10px auto;
-            animation: spin .7s linear infinite;
+            width:36px;
+            height:36px;
+            border:4px solid #1e40af;
+            border-top-color:transparent;
+            border-radius:50%;
+            margin:10px auto;
+            animation:spin .7s linear infinite;
         }
         @keyframes spin {
-            from { transform:rotate(0deg); }
-            to   { transform:rotate(360deg); }
+            from{transform:rotate(0deg);}
+            to{transform:rotate(360deg);}
         }
 
-        /* ✅ Footer */
         .note {
             text-align:center;
             font-size:14px;
-            color:#5a5a5a;
+            color:#555;
             margin-top:25px;
         }
 
+        @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
     </style>
 </head>
 
@@ -136,10 +138,10 @@
 
 <div class="container">
 
-    <!-- ✅ TITLU -->
-    <div class="title">
+    <!-- ✅ TITLU MODERN -->
+    <div class="title-box">
         <div class="title-icon">✍️</div>
-        <h1>Scrie pe Tag</h1>
+        <h1>Scriere Tag NFC</h1>
     </div>
 
     <!-- ✅ CARD SCRIERE -->
@@ -147,46 +149,39 @@
 
         <div class="info">Introduceți textul pentru tag:</div>
 
-        <textarea id="nfcText" rows="3" placeholder="Ex: HAM_001 • LOC_Depozit • KIT_15"></textarea>
+        <textarea id="nfcText" rows="3" placeholder="Ex: HAM_001 · LOC_Depozit · KIT_15"></textarea>
 
-        <button id="writeButton" class="btn btn-green">
-            ✅ Scrie pe Tag
-        </button>
-
-        <button id="eraseButton" class="btn btn-red">
-            🧹 Șterge Tag-ul
-        </button>
+        <button id="writeButton" class="btn btn-green">✅ Scrie pe Tag</button>
+        <button id="eraseButton" class="btn btn-red">🧹 Șterge Tag-ul</button>
 
         index.html<button class="btn btn-gray">⬅ Înapoi</button></a>
+
     </div>
 
-    <!-- ✅ STATUS NFC DINAMIC -->
+    <!-- ✅ STATUS / ANIMAȚIE -->
     <div id="statusBox"></div>
 
     <p class="note">*Funcționează doar pe Android + Chrome*</p>
 
 </div>
 
-<!-- ✅ Script pentru scriere NFC -->
+<!-- ✅ write.js -->
 write.js</script>
 
 <script>
-/* ✅ Când începe scrierea → slide-up + loader animat */
-const writeBtn = document.getElementById("writeButton");
-const eraseBtn = document.getElementById("eraseButton");
-const statusBox = document.getElementById("statusBox");
-
-writeBtn.addEventListener("click", () => {
-    statusBox.innerHTML = `
+/* ✅ Animatie + Loader la scriere */
+document.getElementById("writeButton").addEventListener("click", () => {
+    document.getElementById("statusBox").innerHTML = `
         <div class="loader"></div>
         <div>Approach the NFC tag...</div>
     `;
 });
 
-eraseBtn.addEventListener("click", () => {
-    statusBox.innerHTML = `
+/* ✅ Animatie + Loader la ștergere */
+document.getElementById("eraseButton").addEventListener("click", () => {
+    document.getElementById("statusBox").innerHTML = `
         <div class="loader"></div>
-        <div>Ștergere în curs...</div>
+        <div>Ștergere tag...</div>
     `;
 });
 </script>
