@@ -37,8 +37,8 @@
             font-size: 38px;
             color: #1d4ed8;
             font-weight: 900;
-            margin-top: 70px;
-            margin-bottom: 45px;
+            margin-top: 70px;     /* <<< GAP MARE */
+            margin-bottom: 45px;  /* <<< GAP MARE */
             text-shadow:0 0 12px rgba(255,255,255,0.9);
             animation: fadeIn .5s ease-out;
         }
@@ -59,6 +59,7 @@
             to   {opacity:1; transform: translateY(0);}
         }
 
+        /* ✅ TEXT MODERN CENTRAT */
         .info {
             text-align:center;
             font-size:20px;
@@ -75,10 +76,12 @@
             font-size: 18px;
             resize: none;
             margin-top: 10px;
+            box-sizing: border-box;
             background:white;
             box-shadow:0 4px 12px rgba(0,0,0,0.08);
         }
 
+        /* ✅ BUTOANE PREMIUM */
         .btn {
             width: 100%;
             padding: 17px;
@@ -93,12 +96,13 @@
         }
         .btn:active { transform:scale(.94); }
 
-        .btn-green { background:#16a34a; }
-        .btn-red   { background:#dc2626; }
-        .btn-gray  { background:#6b7280; }
+        .btn-green { background:#16a34a; box-shadow:0 4px 14px rgba(22,163,74,.35); }
+        .btn-red   { background:#dc2626; box-shadow:0 4px 14px rgba(220,38,38,.35); }
+        .btn-gray  { background:#6b7280; box-shadow:0 4px 14px rgba(107,114,128,.35); }
 
         a { text-decoration: none; display:block; }
 
+        /* ✅ LOADER ANIMAT */
         #statusBox {
             margin-top: 25px;
             text-align:center;
@@ -122,6 +126,45 @@
             to   {transform:rotate(360deg);}
         }
 
+        /* ✅ SUCCES ANIMAT PREMIUM */
+        .success-animation {
+            margin-top:10px;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            animation: fadeIn .5s ease-out;
+        }
+
+        .success-circle {
+            width:95px;
+            height:95px;
+            border-radius:50%;
+            background:#16a34a;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            box-shadow:0 0 28px rgba(22,163,74,0.7);
+            animation: pop .32s ease-out;
+        }
+        @keyframes pop {
+            0% {transform:scale(0.4);}
+            75% {transform:scale(1.22);}
+            100% {transform:scale(1);}
+        }
+
+        .success-check {
+            font-size:58px;
+            color:white;
+        }
+
+        .success-text {
+            margin-top:12px;
+            font-size:24px;
+            font-weight:900;
+            color:#16a34a;
+            text-shadow:0 0 8px rgba(255,255,255,0.8);
+        }
+
         .note {
             text-align:center;
             margin-top:25px;
@@ -135,7 +178,9 @@
 
 <div class="container">
 
-    <h1>✍️ Scrierelass="card">
+    <h1>✍️ Scriere Tag NFC</h1>
+
+    <div class="card">
 
         <div class="info">Introduceți datele pentru scrierea tag‑ului:</div>
 
@@ -145,9 +190,12 @@
 
         <button id="eraseButton" class="btn btn-red">🧹 Șterge tag-ul</button>
 
-        index.html
-            <button class="btn btn-gray">⬅ Înapoi la scanare</button>
-        </a>
+        
+<a href="index.html">
+    <button class="btn btn-gray">⬅ Înapoi la scanare</button>
+</a>
+
+
 
     </div>
 
@@ -157,30 +205,28 @@
 
 </div>
 
-write.js</script>
+<script src="write.js"></script>
 
 <script>
-/* ✅ VARIANTA 2 — fără succes automat, doar loader */
-
+/* ✅ Loader + succes animat */
 const statusBox = document.getElementById("statusBox");
 
-/* ✅ La apăsare: doar loader + mesaj */
 document.getElementById("writeButton").addEventListener("click", () => {
     statusBox.innerHTML = `
         <div class="loader"></div>
         Apropie telefonul de tag...
     `;
-});
 
-/* ✅ La ștergere: doar loader + mesaj */
+    
+
 document.getElementById("eraseButton").addEventListener("click", () => {
     statusBox.innerHTML = `
         <div class="loader"></div>
-        Apropie telefonul de tag pentru ștergere...
+        Ștergere tag...
     `;
-});
 
-/* ✅ ATENȚIE: Mesajul REAL de SUCCES va veni din write.js */
+    
+});
 </script>
 
 </body>
