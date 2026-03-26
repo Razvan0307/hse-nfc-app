@@ -1,6 +1,6 @@
 console.log("✅ WRITE.JS LOADED");
 
-// ✅ Verifică suport Web NFC pentru scriere
+// ✅ Verifică suport Web NFC
 function checkNFCSupport() {
     if (!("NDEFReader" in window)) {
         alert("❌ Acest dispozitiv NU suportă scriere NFC (necesar Android + Chrome)");
@@ -20,7 +20,7 @@ function validateNFCText(text) {
     return true;
 }
 
-// ✅ SCRIERE TAG — folosind NDEFReader (compatibilitate maximă)
+// ✅ SCRIERE TAG REALĂ — succesul apare DOAR dacă se finalizează
 async function writeNFC(text) {
     try {
         const writer = new NDEFReader();
@@ -34,7 +34,15 @@ async function writeNFC(text) {
             ]
         });
 
-        alert("✅ Tag scris cu succes!\nConținut: " + text);
+        // ✅ Succes REAL – doar dacă scrierea a reușit
+        document.getElementById("statusBox").innerHTML = `
+            <div class="success-animation">
+                <div class="success-circle">
+                    <div class="success-check">✅</div>
+                </div>
+                <div class="success-text">Scriere reușită!</div>
+            </div>
+        `;
 
     } catch (error) {
         console.error("❌ Eroare la scriere:", error);
@@ -42,7 +50,7 @@ async function writeNFC(text) {
     }
 }
 
-// ✅ ȘTERGERE TAG — golire payload
+// ✅ ȘTERGERE TAG REALĂ — succesul apare DOAR dacă ștergerea este REALĂ
 async function eraseNFC() {
     try {
         const writer = new NDEFReader();
@@ -56,7 +64,15 @@ async function eraseNFC() {
             ]
         });
 
-        alert("✅ Tag șters complet!");
+        // ✅ Succes REAL
+        document.getElementById("statusBox").innerHTML = `
+            <div class="success-animation">
+                <div class="success-circle">
+                    <div class="success-check">✅</div>
+                </div>
+                <div class="success-text">Tag șters!</div>
+            </div>
+        `;
 
     } catch (error) {
         console.error("❌ Eroare la ștergere:", error);
@@ -72,21 +88,13 @@ document.getElementById("writeButton").addEventListener("click", async () => {
     if (!checkNFCSupport()) return;
     if (!validateNFCText(text)) return;
 
-    // Mesaj vizibil
+    // ✅ Loader doar la apropiere de tag
     document.getElementById("statusBox").innerHTML = `
-        <div style="
-            padding:15px;
-            background:#e0e7ff;
-            border-radius:12px;
-            border-left:6px solid #1d4ed8;
-            font-size:18px;">
-            📡 Apropie telefonul de TAG pentru SCRIERE...
-        </div>
+        <div class="loader"></div>
+        Apropie telefonul de TAG pentru SCRIERE...
     `;
 
     await writeNFC(text);
-
-    document.getElementById("statusBox").innerHTML = "";
 });
 
 // ✅ Eveniment ȘTERGERE
@@ -96,18 +104,11 @@ document.getElementById("eraseButton").addEventListener("click", async () => {
 
     if (!confirm("⚠️ Sigur vrei să ștergi complet tag-ul?")) return;
 
+    // ✅ Loader la ștergere
     document.getElementById("statusBox").innerHTML = `
-        <div style="
-            padding:15px;
-            background:#fee2e2;
-            border-radius:12px;
-            border-left:6px solid #dc2626;
-            font-size:18px;">
-            🧹 Apropie telefonul de TAG pentru ȘTERGERE...
-        </div>
+        <div class="loader"></div>
+        Apropie telefonul de TAG pentru ȘTERGERE...
     `;
 
     await eraseNFC();
-
-    document.getElementById("statusBox").innerHTML = "";
 });
