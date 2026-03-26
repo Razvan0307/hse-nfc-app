@@ -1,376 +1,429 @@
-<!DOCTYPE html>
-<html lang="ro">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>NFC Scan</title>
+//--------------------------------------------------
+// CONFIG SUPABASE
+//--------------------------------------------------
+const SUPABASE_URL = "https://rrtyjtbcxgacldniuybn.supabase.co";
+const SUPABASE_KEY = "sb_publishable_BgWYudD6xuJbxRuZHt3mHg_35f1e6j6";
 
-    <style>
-        /* ✅ FUNDAL ANIMAT PREMIUM */
-        body {
-            margin: 0;
-            font-family: "Segoe UI", Arial, sans-serif;
-            background: linear-gradient(135deg, #ffffff, #e8e8ff, #c7ccff, #b79dff, #7e67ff);
-            background-size: 400% 400%;
-            animation: gradientFlow 18s ease infinite;
-            min-height: 100vh;
-            padding-bottom: 40px;
+//--------------------------------------------------
+// VARIABILE GLOBALE
+//--------------------------------------------------
+let currentLocation = "Nesetat";
+let lastScanTime = 0;
+let isScanning = false;
+let pendingEntry = null;
+let lastScannedID = null;
+
+//--------------------------------------------------
+// ICONURI TIP ECHIPAMENT
+//--------------------------------------------------
+function getIconForType(type) {
+    switch (type) {
+        case "ham": return "🪢";
+        case "vesta": return "🦺";
+        case "stingator": return "🔥";
+        case "kit": return "🧰";
+        default: return "❓";
+    }
+}
+
+//--------------------------------------------------
+// UPLOAD FOTO ÎN SUPABASE
+//--------------------------------------------------
+async function uploadPhoto(file, idEchipament) {
+    const fileName = `${idEchipament}_${Date.now()}.jpg`;
+
+    const resp = await fetch(
+        `${SUPABASE_URL}/storage/v1/object/imagini/${fileName}`,
+        {
+            method: "POST",
+            headers: {
+                apikey: SUPABASE_KEY,
+                Authorization: `Bearer ${SUPABASE_KEY}`
+            },
+            body: file
         }
+    );
 
-        @keyframes gradientFlow {
-            0%   { background-position: 0% 50%; }
-            50%  { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+    if (!resp.ok) {
+        console.error("❌ Upload foto eșuat:", await resp.text());
+        return null;
+    }
 
-        .container {
-            max-width: 650px;
-            margin: auto;
-            padding: 20px;
-        }
+    return `${SUPABASE_URL}/storage/v1/object/public/imagini/${fileName}`;
+}
 
-        /* ✅ TITLU + LOGO modern */
-        .title-box {
-            text-align: center;
-            margin-top: 15px;
-            margin-bottom: 25px;
-            animation: fadeIn 0.6s ease-out;
-        }
+//--------------------------------------------------
+// BUTOANE
+//--------------------------------------------------
+document.getElementById("scanNFC").addEventListener("click", scanNFC);
+document.getElementById("exportCSV").addEventListener("click", exportCSV);
 
-        .title-box img {
-            width: 120px;
-            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.25));
-        }
+document.getElementById("clearData").addEventListener("click", () => {
+    if (confirm("Sigur vrei să ștergi afișarea locală?")) {
+        document.getElementById("lista").innerHTML = "";
+    }
+});
 
-        .title-box h1 {
-            margin-top: 10px;
-            font-size: 38px;
-            color: #1d4ed8;
-            font-weight: 900;
-            letter-spacing: 1px;
-            text-shadow: 0 0 10px rgba(255,255,255,0.7);
-        }
+document.getElementById("showHistory").addEventListener("click", async () => {
+    if (!lastScannedID) {
+        alert("Scanează un echipament mai întâi!");
+        return;
+    }
+    await loadHistory(lastScannedID);
+});
 
-        /* ✅ CARD GENERAL */
-        .card {
-            background: rgba(255,255,255,0.88);
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-            margin-bottom: 22px;
-            backdrop-filter: blur(10px);
-            animation: fadeIn 0.4s ease-out;
-        }
-
-        /* ✅ CARD-URI SCANATE */
-        .equip-card {
-            background: #ffffff;
-            padding: 16px;
-            margin-top: 16px;
-            border-radius: 14px;
-            border-left: 6px solid #1d4ed8;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-            animation: slideUp 0.35s ease-out;
-        }
-
-        @keyframes slideUp {
-            from { opacity:0; transform: translateY(20px); }
-            to   { opacity:1; transform: translateY(0); }
-        }
-
-        /* ✅ GLOW în ISTORIC */
-        .equip-card.conform { box-shadow:0 0 15px rgba(22,163,74,0.6); }
-        .equip-card.neconform { box-shadow:0 0 15px rgba(220,38,38,0.6); }
-
-        /* ✅ BUTOANE */
-        .btn {
-            width: 100%;
-            padding: 16px;
-            font-size: 20px;
-            border: none;
-            border-radius: 14px;
-            cursor: pointer;
-            margin: 10px 0;
-            color: white;
-            font-weight: 700;
-        }
-
-        .btn-blue   { background: #1d4ed8; }
-        .btn-blue2  { background: #1e40af; }
-        .btn-green  { background: #16a34a; }
-        .btn-yellow { background:#f59e0b; }
-        .btn-red    { background: #dc2626; }
-        .btn-red2   { background:#b91c1c; }
-
-        #locatie {
-            color: #16a34a;
-            font-weight: bold;
-            font-size: 18px;
-        }
-
-        /* ✅ POPUP GLASS iOS */
-        #popup-bg {
-            display:none;
-            position:fixed;
-            top:0; left:0;
-            width:100%; height:100%;
-            background:rgba(0,0,0,0.45);
-            backdrop-filter:blur(6px);
-            justify-content:center;
-            align-items:center;
-            z-index:9999;
-        }
-
-        #popup {
-            background:rgba(255,255,255,0.55);
-            border:1px solid rgba(255,255,255,0.25);
-            backdrop-filter:blur(16px);
-            padding:25px;
-            border-radius:25px;
-            width:90%;
-            max-width:430px;
-            max-height:80vh;
-            overflow-y:auto;
-            box-shadow:0 8px 25px rgba(0,0,0,0.25);
-            animation: fadeIn 0.25s ease-out;
-        }
-
-        /* ✅ FOTO PREVIEW */
-        #photo-preview {
-            display:none;
-            width:100%;
-            margin-top:12px;
-            border-radius:14px;
-            cursor:pointer;
-            box-shadow:0 4px 12px rgba(0,0,0,0.25);
-        }
-
-        /* ✅ FULLSCREEN FOTO */
-        #fullscreen-bg {
-            display:none;
-            position:fixed;
-            top:0; left:0;
-            width:100%; height:100%;
-            background:rgba(0,0,0,0.9);
-            justify-content:center;
-            align-items:center;
-            z-index:10000;
-        }
-
-        #fullscreen-img {
-            max-width: 92%;
-            max-height: 92%;
-            border-radius:16px;
-            animation: zoomIn 0.25s ease-out;
-        }
-
-        @keyframes zoomIn {
-            from { opacity:0; transform:scale(0.85); }
-            to   { opacity:1; transform:scale(1); }
-        }
-
-        /* ✅ SKELETON */
-        .skeleton {
-            height: 80px;
-            background: linear-gradient(90deg, #e4e4e4, #f3f3f3, #e4e4e4);
-            background-size: 200% 100%;
-            animation: skeletonMove 1.5s infinite;
-            border-radius: 12px;
-            margin-bottom: 14px;
-        }
-
-        @keyframes skeletonMove {
-            0% { background-position:200% 0; }
-            100% { background-position:-200% 0; }
-        }
-
-        /* ✅ Animații */
-
-        @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
-
-        /* ✅ FAB SCAN NFC — ANIMAT */
-        @keyframes fabPulse {
-            0%   { transform:scale(1);    box-shadow:0 0 20px rgba(29,78,216,0.45); }
-            50%  { transform:scale(1.1);  box-shadow:0 0 30px rgba(29,78,216,0.75); }
-            100% { transform:scale(1);    box-shadow:0 0 20px rgba(29,78,216,0.45); }
-        }
-
-        /* ✅ Conform / Neconform modern */
-        .cn-buttons {
-            display:flex;
-            justify-content:center;
-            gap:20px;
-            margin-top:15px;
-        }
-        .cn-buttons button {
-            width:45%;
-            padding:18px;
-            border:none;
-            border-radius:18px;
-            font-size:22px;
-            font-weight:700;
-            color:white;
-            cursor:pointer;
-            transition:0.18s ease;
-        }
-        .cn-buttons button:active {
-            transform:scale(0.92);
-        }
-    </style>
-</head>
-
-<body>
-
-<div class="container">
-
-    <!-- ✅ TITLU + LOGO MODERN -->
-    <div class="title-box">
-        <img src="dpw.png" alt="DP World">
-        <h1>NFC Scan</h1>
-    </div>
-
-    <!-- ✅ CARD PRINCIPAL -->
-    <div class="card">
-
-        <p><strong>Locația curentă:</strong> <span id="locatie">Nesetat</span></p>
-
-        <!-- ✅ FAB BUTTON MODERN -->
-        <div style="display:flex; flex-direction:column; align-items:center; margin-top:20px;">
-            <button id="scanNFC"
-                style="
-                    width:120px;
-                    height:120px;
-                    background:#1d4ed8;
-                    border:none;
-                    border-radius:50%;
-                    display:flex;
-                    justify-content:center;
-                    align-items:center;
-                    font-size:50px;
-                    color:white;
-                    animation: fabPulse 2.2s infinite ease-in-out;
-                    cursor:pointer;
-                ">
-                📡
-            </button>
-
-            <span style="
-                margin-top:10px;
-                font-size:20px;
-                font-weight:700;
-                color:#1d4ed8;
-                text-shadow:0 0 6px rgba(255,255,255,0.6);
-            ">
-                Scan NFC
-            </span>
-        </div>
-
-        <a href="write.html">
-            <button class="btn btn-green">✍️ Scrie NFC</button>
-        </a>
-
-        <p id="scanStatus" style="
-            display:none;
-            text-align:center;
-            font-weight:bold;
-            color:#1d4ed8;
-            font-size:18px;
-        ">🔎 Apropie telefonul de tag...</p>
-    </div>
-
-    <h2 style="font-size:22px; margin-top:25px; color:white;">Echipamente scanate:</h2>
-
-    <div id="lista"></div>
-
-    <button id="showHistory" class="btn btn-blue" style="margin-top:20px;">
-        📜 Arată istoricul echipamentului
-    </button>
-
-    <div id="istoric" class="card" style="display:none; margin-top:15px;">
-        <h3 style="margin-top:0;">Istoric echipament</h3>
-        <div id="istoricContent"></div>
-    </div>
-
-    <button id="exportCSV" class="btn btn-yellow">📁 Exportă în Excel (CSV)</button>
-    <button id="clearData" class="btn btn-red">🗑️ Șterge afișarea locală</button>
-
-</div>
-
-<!-- ✅ POPUP NEconform -->
-<div id="popup-bg">
-    <div id="popup">
-
-        <h3 style="text-align:center; font-size:24px; color:#1d4ed8; font-weight:800;">
-            Echipamentul este conform?
-        </h3>
-
-        <!-- ✅ BUTOANE MODERNE CONFORM / NECONFORM -->
-        <div class="cn-buttons">
-            <button id="btn-conform" style="background:#16a34a; box-shadow:0 4px 14px rgba(22,163,74,0.45);">
-                ✅ Conform
-            </button>
-
-            <button id="btn-neconform" style="background:#dc2626; box-shadow:0 4px 14px rgba(220,38,38,0.45);">
-                ❌ Neconform
-            </button>
-        </div>
-
-        <div id="popup-observatii" style="display:none; margin-top:18px;">
-
-            <textarea id="obs-text" rows="4" placeholder="Introduceți observațiile..."
-                style="width:100%; padding:12px; border-radius:14px; border:1px solid #ccc;"></textarea>
-
-            <button id="btn-photo" class="btn btn-blue2">📸 Adaugă fotografie</button>
-
-            <label style="opacity:0; position:absolute; left:-9999px;">
-                <input type="file" id="photo-input" accept="image/*" capture="environment">
-            </label>
-
-            <img id="photo-preview">
-
-            <button id="btn-delete-photo" class="btn-red2" style="display:none;">
-                🗑️ Șterge fotografia
-            </button>
-
-            <div id="loader" style="display:none; text-align:center; font-weight:bold; color:#1d4ed8; margin-top:10px;">
-                ⏳ Se încarcă fotografia...
-            </div>
-
-            <button id="btn-save-obs" class="btn-blue2">💾 Salvează</button>
-
-        </div>
-    </div>
-</div>
-
-<!-- ✅ FULLSCREEN FOTO -->
-<div id="fullscreen-bg">
-    <img id="fullscreen-img">
-</div>
-
-<script>
-document.getElementById("photo-preview").onclick = () => {
-    const full = document.getElementById("fullscreen-bg");
-    const img = document.getElementById("fullscreen-img");
-    img.src = document.getElementById("photo-preview").src;
-    full.style.display = "flex";
+//--------------------------------------------------
+// FOTO — selectare + preview
+//--------------------------------------------------
+document.getElementById("btn-photo").onclick = () => {
+    document.getElementById("photo-input").click();
 };
-document.getElementById("fullscreen-bg").onclick = () => {
-    document.getElementById("fullscreen-bg").style.display = "none";
+
+document.getElementById("photo-input").onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    pendingEntry.photoFile = file;
+
+    const preview = document.getElementById("photo-preview");
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
+
+    document.getElementById("btn-delete-photo").style.display = "block";
 };
+
+//--------------------------------------------------
+// POPUP HANDLERS
+//--------------------------------------------------
+function showPopup(entry) {
+    pendingEntry = entry;
+
+    // reset popup
+    document.getElementById("popup-observatii").style.display = "none";
+    document.getElementById("obs-text").value = "";
+    document.getElementById("photo-preview").style.display = "none";
+    document.getElementById("btn-delete-photo").style.display = "none";
+    pendingEntry.photoFile = null;
+
+    // ensure conform/neconform are visible
+    document.querySelector(".cn-buttons").style.display = "flex";
+
+    document.getElementById("popup-bg").style.display = "flex";
+}
+
+function closePopup() {
+    document.getElementById("popup-bg").style.display = "none";
+    document.getElementById("popup-observatii").style.display = "none";
+    pendingEntry.photoFile = null;
+}
+
+//--------------------------------------------------
+// CONFORM
+//--------------------------------------------------
+document.getElementById("btn-conform").onclick = async () => {
+    pendingEntry.stare = "conform";
+    pendingEntry.observatii = "";
+    pendingEntry.poza = null;
+
+    await saveToSupabase(pendingEntry);
+    await saveToHistory(pendingEntry);
+
+    addCard({
+        ...pendingEntry,
+        idDisplay: pendingEntry.id_echipament.replace(/^\w+_/, "")
+    });
+
+    closePopup();
+};
+
+//--------------------------------------------------
+// NECONFORM
+//--------------------------------------------------
+document.getElementById("btn-neconform").onclick = () => {
+    document.querySelector(".cn-buttons").style.display = "none";
+    document.getElementById("popup-observatii").style.display = "block";
+};
+
+//--------------------------------------------------
+// ȘTERGE FOTO
+//--------------------------------------------------
 document.getElementById("btn-delete-photo").onclick = () => {
     document.getElementById("photo-preview").style.display = "none";
     document.getElementById("btn-delete-photo").style.display = "none";
     document.getElementById("photo-input").value = "";
+    pendingEntry.photoFile = null;
 };
-</script>
 
-<script src="app.js"></script>
+//--------------------------------------------------
+// SALVARE OBSERVAȚII + FOTO
+//--------------------------------------------------
+document.getElementById("btn-save-obs").onclick = async () => {
+    const obs = document.getElementById("obs-text").value.trim();
 
-<script>
-if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("service-worker.js");
+    pendingEntry.stare = "neconform";
+    pendingEntry.observatii = obs || "Fără observații";
+
+    if (pendingEntry.photoFile) {
+        const url = await uploadPhoto(pendingEntry.photoFile, pendingEntry.id_echipament);
+        if (url) pendingEntry.poza = url;
+    }
+
+    await saveToSupabase(pendingEntry);
+    await saveToHistory(pendingEntry);
+
+    addCard({
+        ...pendingEntry,
+        idDisplay: pendingEntry.id_echipament.replace(/^\w+_/, "")
+    });
+
+    closePopup();
+};
+
+//--------------------------------------------------
+// DETECTARE TIP
+//--------------------------------------------------
+function detectTip(id) {
+    if (id.startsWith("HAM_")) return "ham";
+    if (id.startsWith("VESTA_")) return "vesta";
+    if (id.startsWith("STING_")) return "stingator";
+    if (id.startsWith("KIT_")) return "kit";
+    return "necunoscut";
 }
-</script>
 
-</body>
-</html>
+//--------------------------------------------------
+// SCAN NFC
+//--------------------------------------------------
+async function scanNFC() {
+    if (isScanning) return;
+    isScanning = true;
+
+    document.getElementById("scanStatus").style.display = "block";
+    document.getElementById("istoric").style.display = "none";
+
+    try {
+        const reader = new NDEFReader();
+        await reader.scan({ keepSessionAlive: true });
+
+        reader.onreading = async (event) => {
+            event.preventDefault();
+
+            const now = Date.now();
+            if (now - lastScanTime < 1500) return;
+            lastScanTime = now;
+
+            const rawText = new TextDecoder().decode(event.message.records[0].data).trim();
+
+            if (rawText.startsWith("LOC_")) {
+                currentLocation = rawText.replace("LOC_", "");
+                document.getElementById("locatie").textContent = currentLocation;
+                alert("✅ Locație setată: " + currentLocation);
+
+                isScanning = false;
+                document.getElementById("scanStatus").style.display = "none";
+                return;
+            }
+
+            const id = rawText;
+            lastScannedID = id;
+
+            const tip = detectTip(id);
+            const timestamp = new Date().toLocaleString("ro-RO");
+
+            const entry = {
+                id_echipament: id,
+                tip,
+                locatie: currentLocation,
+                stare: "",
+                observatii: "",
+                poza: null,
+                data_scan: timestamp
+            };
+
+            showPopup(entry);
+
+            isScanning = false;
+            document.getElementById("scanStatus").style.display = "none";
+        };
+
+    } catch (err) {
+        console.error(err);
+        alert("Eroare NFC: " + err);
+        isScanning = false;
+    }
+}
+
+//--------------------------------------------------
+// SAVE / UPDATE ECHIPAMENTE
+//--------------------------------------------------
+async function saveToSupabase(entry) {
+    const checkUrl = `${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}&select=*`;
+
+    const existing = await fetch(checkUrl, {
+        headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
+    }).then(r => r.json());
+
+    if (existing.length > 0) {
+        await fetch(`${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}`, {
+            method: "PATCH",
+            headers: {
+                apikey: SUPABASE_KEY,
+                Authorization: `Bearer ${SUPABASE_KEY}`,
+                "Content-Type": "application/json",
+                Prefer: "return=representation"
+            },
+            body: JSON.stringify(entry)
+        });
+    } else {
+        await fetch(`${SUPABASE_URL}/rest/v1/echipamente`, {
+            method: "POST",
+            headers: {
+                apikey: SUPABASE_KEY,
+                Authorization: `Bearer ${SUPABASE_KEY}`,
+                "Content-Type": "application/json",
+                Prefer: "return=representation"
+            },
+            body: JSON.stringify(entry)
+        });
+    }
+}
+
+//--------------------------------------------------
+// LISTA PRINCIPALĂ — CU ICON + TIP
+//--------------------------------------------------
+function addCard(entry) {
+    const lista = document.getElementById("lista");
+    const card = document.createElement("div");
+
+    const icon = getIconForType(entry.tip);
+
+    card.className = "equip-card";
+
+    card.innerHTML = `
+        <div class="equip-id">${icon} ${entry.idDisplay}</div>
+        <div class="equip-status">🔖 Tip: ${entry.tip.toUpperCase()}</div>
+        <div class="equip-loc">📍 ${entry.locatie}</div>
+        <div class="equip-time">⏱ ${entry.data_scan}</div>
+        <div class="equip-status">Stare: ${entry.stare}</div>
+        ${entry.observatii ? `<div class="equip-status">✏️ Observații: ${entry.observatii}</div>` : ""}
+    `;
+
+    lista.prepend(card);
+}
+
+//--------------------------------------------------
+// SAVE HISTORY
+//--------------------------------------------------
+async function saveToHistory(entry) {
+
+    const payload = {
+        id_echipament: entry.id_echipament,
+        locatie: entry.locatie,
+        stare: entry.stare,
+        observatii: entry.observatii,
+        poza: entry.poza || null,
+        data_scan: entry.data_scan
+    };
+
+    await fetch(`${SUPABASE_URL}/rest/v1/echipamente_istoric`, {
+        method: "POST",
+        headers: {
+            apikey: SUPABASE_KEY,
+            Authorization: `Bearer ${SUPABASE_KEY}`,
+            "Content-Type": "application/json",
+            Prefer: "return=representation"
+        },
+        body: JSON.stringify(payload)
+    });
+}
+
+//--------------------------------------------------
+// LOAD HISTORY — DESCRESCĂTOR + GLOW + THUMBNAIL + SKELETON
+//--------------------------------------------------
+async function loadHistory(id) {
+    const box = document.getElementById("istoric");
+    const content = document.getElementById("istoricContent");
+
+    box.style.display = "block";
+
+    // ✅ skeleton loader (3 carduri)
+    content.innerHTML = `
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+    `;
+
+    const url = `${SUPABASE_URL}/rest/v1/echipamente_istoric?id_equipament=eq.${id}&select=*`;
+    const data = await fetch(url, {
+        headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
+    }).then(r => r.json());
+
+    if (!data || data.length === 0) {
+        content.innerHTML = "<p>Nu există istoric.</p>";
+        return;
+    }
+
+    // ✅ sortare descrescătoare
+    data.sort((a, b) => new Date(b.data_scan) - new Date(a.data_scan));
+
+    let html = "";
+
+    data.forEach(item => {
+        const icon = getIconForType(detectTip(item.id_echipament));
+
+        html += `
+        <div class="equip-card history-card ${item.stare === 'conform' ? 'conform' : 'neconform'}"
+             data-photo="${item.poza || ""}">
+
+            <div class="equip-id">${icon} ${item.id_echipament.replace(/^\w+_/, "")}</div>
+
+            <div class="equip-status">🔖 Tip: ${detectTip(item.id_echipament).toUpperCase()}</div>
+
+            <div class="equip-loc">📍 ${item.locatie}</div>
+            <div class="equip-time">⏱ ${item.data_scan}</div>
+
+            <div class="equip-status">Stare: ${item.stare}</div>
+
+            ${item.observatii ? `<div class="equip-status">✏️ Observații: ${item.observatii}</div>` : ""}
+
+            ${item.poza ? `${item.poza}` : ""}
+        </div>
+        `;
+    });
+
+    content.innerHTML = html;
+}
+
+//--------------------------------------------------
+// FULLSCREEN FOTO (click pe thumbnail)
+//--------------------------------------------------
+document.addEventListener("click", (e) => {
+
+    if (e.target.classList.contains("history-photo")) {
+        const full = document.getElementById("fullscreen-bg");
+        const img = document.getElementById("fullscreen-img");
+
+        img.src = e.target.src;
+        full.style.display = "flex";
+    }
+});
+
+//--------------------------------------------------
+// EXPORT CSV
+//--------------------------------------------------
+function exportCSV() {
+    let csv = "ID,Tip,Locatie,Stare,DataScan,Observatii\n";
+
+    const cards = document.querySelectorAll(".equip-card");
+    cards.forEach(card => {
+        const lines = card.innerText.split("\n");
+        csv += `${lines[0]},${lines[1]},${lines[2]},${lines[3]},${lines[4] || ""}\n`;
+    });
+
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "echipamente_export.csv";
+    a.click();
+}
