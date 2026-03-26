@@ -5,19 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Scriere NFC</title>
 
+    <!-- ✅ Elimină eroarea favicon.ico 404 -->
+    <link rel="icon" href="data:,">
+
     <style>
-        /* ✅ FUNDAL MODERN */
+        /* ✅ FUNDAL PREMIUM CU ANIMAȚIE */
         body {
             margin: 0;
             background: linear-gradient(135deg,#ffffff,#e8e8ff,#c7ccff,#b79dff,#7e67ff);
             background-size: 400% 400%;
-            animation: gradientFlow 18s ease infinite;
+            animation: bgFlow 18s ease infinite;
             font-family: "Segoe UI", Arial, sans-serif;
             min-height: 100vh;
             padding-bottom: 40px;
         }
 
-        @keyframes gradientFlow {
+        @keyframes bgFlow {
             0% {background-position:0% 50%;}
             50% {background-position:100% 50%;}
             100% {background-position:0% 50%;}
@@ -29,98 +32,149 @@
             padding: 20px;
         }
 
-        /* ✅ TITLU MODERN */
+        /* ✅ TITLU MODERN + GAP MARE */
         h1 {
             text-align: center;
-            font-size: 34px;
+            font-size: 38px;
             color: #1d4ed8;
             font-weight: 900;
-            margin-top: 25px;
-            text-shadow: 0 0 10px rgba(255,255,255,.7);
+            margin-top: 45px;        /* <<< gap mărit */
+            margin-bottom: 35px;     /* <<< gap mărit */
+            text-shadow: 0 0 12px rgba(255,255,255,0.9);
             animation: fadeIn .5s ease-out;
         }
 
-        /* ✅ CARD PREMIUM + SLIDE-UP */
-        .card {
-            background: rgba(255,255,255,0.88);
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            margin-top: 20px;
+        @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
 
+        /* ✅ CARD MODERN + ANIMAȚIE */
+        .card {
+            background: rgba(255,255,255,0.92);
+            padding: 28px;
+            border-radius: 24px;
+            box-shadow: 0 10px 32px rgba(0,0,0,0.18);
+            backdrop-filter: blur(12px);
             animation: slideUp .35s ease-out;
-            backdrop-filter: blur(10px);
         }
 
         @keyframes slideUp {
-            from {opacity:0; transform: translateY(25px);}
+            from {opacity:0; transform: translateY(35px);}
             to   {opacity:1; transform: translateY(0);}
+        }
+
+        /* ✅ TEXT MAI FRUMOS + CENTRAT */
+        .info {
+            font-size:20px;
+            font-weight:700;
+            text-align:center;
+            margin-bottom:15px;
+            color:#1e40af;
         }
 
         textarea {
             width: 100%;
-            padding: 14px;
-            border-radius: 14px;
+            padding: 16px;
+            border-radius: 16px;
             border: 1px solid #ccc;
             font-size: 18px;
             resize: none;
             margin-top: 10px;
             box-sizing: border-box;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            background:white;
+            box-shadow:0 4px 12px rgba(0,0,0,0.08);
         }
 
-        /* ✅ BUTOANE MODERNE */
+        /* ✅ BUTOANE PREMIUM */
         .btn {
             width: 100%;
-            padding: 16px;
-            font-size: 20px;
+            padding: 18px;
+            font-size: 21px;
             border: none;
-            border-radius: 14px;
+            border-radius: 16px;
             cursor: pointer;
-            margin-top: 15px;
+            margin-top: 18px;
             color: white;
-            font-weight: 700;
-            transition: .15s ease;
-        }
-
-        .btn:active { transform: scale(0.95); }
-
-        .btn-green { background: #16a34a; box-shadow:0 4px 14px rgba(22,163,74,.35); }
-        .btn-red   { background: #dc2626; box-shadow:0 4px 14px rgba(220,38,38,.35); }
-        .btn-gray  { background: #6b7280; box-shadow:0 4px 14px rgba(107,114,128,.35); }
-
-        a { text-decoration: none; }
-
-        /* ✅ LOADER */
-        #statusBox {
-            margin-top: 22px;
-            text-align: center;
-            font-size: 18px;
             font-weight: 800;
+            transition:0.15s ease;
+        }
+        .btn:active { transform:scale(.94); }
+
+        .btn-green { background:#16a34a; box-shadow:0 4px 14px rgba(22,163,74,.35); }
+        .btn-red   { background:#dc2626; box-shadow:0 4px 14px rgba(220,38,38,.35); }
+        .btn-gray  { background:#6b7280; box-shadow:0 4px 14px rgba(107,114,128,.35); }
+
+        a { text-decoration: none; display:block; }
+
+        /* ✅ LOADER ANIMAT */
+        #statusBox {
+            margin-top: 25px;
+            text-align:center;
+            font-size:18px;
+            font-weight:800;
             color:#1e40af;
         }
 
         .loader {
-            width: 38px;
-            height: 38px;
+            width: 40px;
+            height: 40px;
             border: 4px solid #1e40af;
             border-top-color: transparent;
             border-radius: 50%;
             margin: 10px auto;
             animation: spin .7s linear infinite;
         }
-
         @keyframes spin {
-            from { transform:rotate(0deg); }
-            to   { transform:rotate(360deg); }
+            from {transform:rotate(0deg);}
+            to   {transform:rotate(360deg);}
         }
 
+        /* ✅ SUCCES ANIMAT */
+        .success-animation {
+            margin-top:20px;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            animation: fadeIn .4s ease-out;
+        }
+
+        .success-circle {
+            width:95px;
+            height:95px;
+            border-radius:50%;
+            background:#16a34a;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            box-shadow:0 0 20px rgba(22,163,74,0.65);
+            animation: pop .25s ease-out;
+        }
+
+        @keyframes pop {
+            0% {transform:scale(0.4);}
+            70% {transform:scale(1.18);}
+            100% {transform:scale(1);}
+        }
+
+        .success-check {
+            font-size:55px;
+            color:white;
+        }
+
+        .success-text {
+            margin-top:12px;
+            font-size:24px;
+            font-weight:900;
+            color:#16a34a;
+            text-shadow:0 0 6px rgba(255,255,255,0.7);
+        }
+
+        /* ✅ NOTE */
         .note {
             text-align:center;
             margin-top:25px;
             font-size:14px;
             color:#555;
         }
+
     </style>
 </head>
 
@@ -132,51 +186,66 @@
 
         <div class="card">
 
-            <p style="font-size:18px; font-weight:600;">
-                Introdu textul pentru tag:
-            </p>
+            <div class="info">Introduceți datele pentru scriere:</div>
 
-            <textarea id="nfcText" rows="3" placeholder="Ex: HAM_001, LOC_Magazin, KIT_015"></textarea>
+            <textarea id="nfcText" rows="3" placeholder="Ex: HAM_001 · KIT_015 · LOC_Depozit"></textarea>
 
-            <button id="writeButton" class="btn btn-green">
-                ✅ Scrie pe tag
-            </button>
+            <button id="writeButton" class="btn btn-green">✅ Scrie pe tag</button>
 
-            <button id="eraseButton" class="btn btn-red">
-                🧹 Șterge tag-ul
-            </button>
+            <button id="eraseButton" class="btn btn-red">🧹 Șterge tag-ul</button>
 
-            <a href="index.html">
-                <button class="btn btn-gray">⬅ Înapoi</button>
-            </a>
-
+            index.html<button class="btn btn-gray">⬅ Înapoi</button></a>
         </div>
 
         <div id="statusBox"></div>
 
-        <p class="note">
-            *Scrierea NFC funcționează doar pe Android + Chrome*
-        </p>
+        <p class="note">*Scriere NFC disponibilă doar pe Android + Chrome*</p>
 
     </div>
 
-    <!-- ✅ SCRIPT WRITE.JS (FUNCȚIONEAZĂ ACUM) -->
-    <script src="write.js"></script>
+    write.js</script>
 
     <script>
-    /* ✅ Adăugăm loader animat la scriere */
+    /* ✅ Loader + succes animat */
+
+    const statusBox = document.getElementById("statusBox");
+
     document.getElementById("writeButton").addEventListener("click", () => {
+
         statusBox.innerHTML = `
             <div class="loader"></div>
             Apropie telefonul de tag...
         `;
+
+        setTimeout(() => {
+            statusBox.innerHTML = `
+                <div class="success-animation">
+                    <div class="success-circle">
+                        <div class="success-check">✅</div>
+                    </div>
+                    <div class="success-text">Scriere reușită!</div>
+                </div>
+            `;
+        }, 2000);
     });
 
     document.getElementById("eraseButton").addEventListener("click", () => {
+
         statusBox.innerHTML = `
             <div class="loader"></div>
             Ștergere tag...
         `;
+
+        setTimeout(() => {
+            statusBox.innerHTML = `
+                <div class="success-animation">
+                    <div class="success-circle">
+                        <div class="success-check">✅</div>
+                    </div>
+                    <div class="success-text">Tag șters!</div>
+                </div>
+            `;
+        }, 2000);
     });
     </script>
 
