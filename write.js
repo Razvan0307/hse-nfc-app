@@ -1,4 +1,4 @@
-console.log("✅ WRITE.JS LOADED");
+
 
 // ✅ Verifică suport Web NFC
 function checkNFCSupport() {
