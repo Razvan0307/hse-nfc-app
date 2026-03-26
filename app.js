@@ -257,7 +257,7 @@ async function scanNFC() {
 //--------------------------------------------------
 async function saveToSupabase(entry) {
 
-    // curățăm ID-ul ca să nu conțină newline sau caractere ascunse
+    // ✅ Curățăm ID-ul ca să nu conțină newline sau caractere ascunse
     entry.id_echipament = entry.id_echipament
         .replace(/\0/g, "")
         .replace(/\r/g, "")
@@ -265,9 +265,10 @@ async function saveToSupabase(entry) {
         .replace(/\t/g, "")
         .trim();
 
-    // ✅ CORECT — folosim & (nu &amp;)
+    // ✅ URL CORECT — folosim & (nu &amp;)
     const checkUrl = `${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}&select=*`;
 
+    // ✅ Verificăm dacă există deja echipamentul
     const existing = await fetch(checkUrl, {
         headers: {
             apikey: SUPABASE_KEY,
@@ -275,6 +276,8 @@ async function saveToSupabase(entry) {
         }
     }).then(r => r.json());
 
+
+    // ✅ Dacă există → facem UPDATE
     if (existing.length > 0) {
 
         await fetch(`${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}`, {
@@ -288,7 +291,10 @@ async function saveToSupabase(entry) {
             body: JSON.stringify(entry)
         });
 
-    } else {
+    } 
+
+    // ✅ Dacă NU există → facem INSERT
+    else {
 
         await fetch(`${SUPABASE_URL}/rest/v1/echipamente`, {
             method: "POST",
@@ -302,174 +308,4 @@ async function saveToSupabase(entry) {
         });
 
     }
-}
-
-    } else {
-        // ✅ INSERT corect
-        await fetch(`${SUPABASE_URL}/rest/v1/echipamente`, {
-            method: "POST",
-            headers: {
-                apikey: SUPABASE_KEY,
-                Authorization: `Bearer ${SUPABASE_KEY}`,
-                "Content-Type": "application/json",
-                Prefer: "return=representation"
-            },
-            body: JSON.stringify(entry)
-        });
-    }
-}
-     else {
-        await fetch(`${SUPABASE_URL}/rest/v1/echipamente`, {
-            method: "POST",
-            headers: {
-                apikey: SUPABASE_KEY,
-                Authorization: `Bearer ${SUPABASE_KEY}`,
-                "Content-Type": "application/json",
-                Prefer: "return=representation"
-            },
-            body: JSON.stringify(entry)
-        });
-    }
-}
-
-//--------------------------------------------------
-// LISTA PRINCIPALĂ — CU ICON + TIP
-//--------------------------------------------------
-function addCard(entry) {
-    const lista = document.getElementById("lista");
-    const card = document.createElement("div");
-
-    const icon = getIconForType(entry.tip);
-
-    card.className = "equip-card";
-
-    card.innerHTML = `
-        <div class="equip-id">${icon} ${entry.idDisplay}</div>
-        <div class="equip-status">🔖 Tip: ${entry.tip.toUpperCase()}</div>
-        <div class="equip-loc">📍 ${entry.locatie}</div>
-        <div class="equip-time">⏱ ${entry.data_scan}</div>
-        <div class="equip-status">Stare: ${entry.stare}</div>
-        ${entry.observatii ? `<div class="equip-status">✏️ Observații: ${entry.observatii}</div>` : ""}
-    `;
-
-    lista.prepend(card);
-}
-
-//--------------------------------------------------
-// SAVE HISTORY
-//--------------------------------------------------
-async function saveToHistory(entry) {
-
-    const payload = {
-        id_echipament: entry.id_echipament,
-        locatie: entry.locatie,
-        stare: entry.stare,
-        observatii: entry.observatii,
-        poza: entry.poza || null,
-        data_scan: entry.data_scan
-    };
-
-    await fetch(`${SUPABASE_URL}/rest/v1/echipamente_istoric`, {
-        method: "POST",
-        headers: {
-            apikey: SUPABASE_KEY,
-            Authorization: `Bearer ${SUPABASE_KEY}`,
-            "Content-Type": "application/json",
-            Prefer: "return=representation"
-        },
-        body: JSON.stringify(payload)
-    });
-}
-
-//--------------------------------------------------
-// LOAD HISTORY — DESCRESCĂTOR + GLOW + THUMBNAIL + SKELETON
-//--------------------------------------------------
-async function loadHistory(id) {
-    const box = document.getElementById("istoric");
-    const content = document.getElementById("istoricContent");
-
-    box.style.display = "block";
-
-    // ✅ skeleton loader (3 carduri)
-    content.innerHTML = `
-        <div class="skeleton"></div>
-        <div class="skeleton"></div>
-        <div class="skeleton"></div>
-    `;
-
-    const url = `${SUPABASE_URL}/rest/v1/echipamente_istoric?id_echipament=eq.${id}&select=*`;
-    const data = await fetch(url, {
-        headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
-    }).then(r => r.json());
-
-    if (!data || data.length === 0) {
-        content.innerHTML = "<p>Nu există istoric.</p>";
-        return;
-    }
-
-    // ✅ sortare descrescătoare
-    data.sort((a, b) => new Date(b.data_scan) - new Date(a.data_scan));
-
-    let html = "";
-
-    data.forEach(item => {
-        const icon = getIconForType(detectTip(item.id_echipament));
-
-        html += `
-        <div class="equip-card history-card ${item.stare === 'conform' ? 'conform' : 'neconform'}"
-             data-photo="${item.poza || ""}">
-
-            <div class="equip-id">${icon} ${item.id_echipament.replace(/^\w+_/, "")}</div>
-
-            <div class="equip-status">🔖 Tip: ${detectTip(item.id_echipament).toUpperCase()}</div>
-
-            <div class="equip-loc">📍 ${item.locatie}</div>
-            <div class="equip-time">⏱ ${item.data_scan}</div>
-
-            <div class="equip-status">Stare: ${item.stare}</div>
-
-            ${item.observatii ? `<div class="equip-status">✏️ Observații: ${item.observatii}</div>` : ""}
-
-            ${item.poza ? ` <img src="${item.poza}" class="history-photo"
-                style="width:90px; margin-top:10px; border-radius:10px; cursor:pointer;">` : ""}
-        </div>
-        `;
-    });
-
-    content.innerHTML = html;
-}
-
-//--------------------------------------------------
-// FULLSCREEN FOTO (click pe thumbnail)
-//--------------------------------------------------
-document.addEventListener("click", (e) => {
-
-    if (e.target.classList.contains("history-photo")) {
-        const full = document.getElementById("fullscreen-bg");
-        const img = document.getElementById("fullscreen-img");
-
-        img.src = e.target.src;
-        full.style.display = "flex";
-    }
-});
-
-//--------------------------------------------------
-// EXPORT CSV
-//--------------------------------------------------
-function exportCSV() {
-    let csv = "ID,Tip,Locatie,Stare,DataScan,Observatii\n";
-
-    const cards = document.querySelectorAll(".equip-card");
-    cards.forEach(card => {
-        const lines = card.innerText.split("\n");
-        csv += `${lines[0]},${lines[1]},${lines[2]},${lines[3]},${lines[4] || ""}\n`;
-    });
-
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "echipamente_export.csv";
-    a.click();
 }
