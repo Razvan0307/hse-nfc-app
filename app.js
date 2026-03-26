@@ -1,4 +1,4 @@
-console.log(" LOADEDfaf");
+console.log(" L736OADEDfaf");
 //--------------------------------------------------
 // CONFIG SUPABASE
 //--------------------------------------------------
@@ -206,7 +206,6 @@ async function scanNFC() {
 
         reader.onreading = async (event) => {
             event.preventDefault();
-
             const now = Date.now();
             if (now - lastScanTime < 1500) return;
             lastScanTime = now;
@@ -227,6 +226,12 @@ async function scanNFC() {
             lastScannedID = id;
 
             const tip = detectTip(id);
+            if (tip === "necunoscut") {
+                alert("❌ Tag necunoscut!");
+                isScanning = false;
+                return;
+            }
+
             const timestamp = new Date().toLocaleString("ro-RO");
 
             const entry = {
