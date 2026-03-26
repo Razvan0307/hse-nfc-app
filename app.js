@@ -98,14 +98,13 @@ document.getElementById("photo-input").onchange = (e) => {
 function showPopup(entry) {
     pendingEntry = entry;
 
-    // reset popup
     document.getElementById("popup-observatii").style.display = "none";
     document.getElementById("obs-text").value = "";
     document.getElementById("photo-preview").style.display = "none";
     document.getElementById("btn-delete-photo").style.display = "none";
     pendingEntry.photoFile = null;
 
-    // ensure conform/neconform are visible
+    // reafisează butoanele Conform/Neconform
     document.querySelector(".cn-buttons").style.display = "flex";
 
     document.getElementById("popup-bg").style.display = "flex";
@@ -352,7 +351,7 @@ async function loadHistory(id) {
         <div class="skeleton"></div>
     `;
 
-    const url = `${SUPABASE_URL}/rest/v1/echipamente_istoric?id_equipament=eq.${id}&select=*`;
+    const url = `${SUPABASE_URL}/rest/v1/echipamente_istoric?id_echipament=eq.${id}&select=*`;
     const data = await fetch(url, {
         headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
     }).then(r => r.json());
@@ -385,7 +384,8 @@ async function loadHistory(id) {
 
             ${item.observatii ? `<div class="equip-status">✏️ Observații: ${item.observatii}</div>` : ""}
 
-            ${item.poza ? `${item.poza}` : ""}
+            ${item.poza ? ` <img src="${item.poza}" class="history-photo"
+                style="width:90px; margin-top:10px; border-radius:10px; cursor:pointer;">` : ""}
         </div>
         `;
     });
