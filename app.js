@@ -30,7 +30,6 @@ function getIconForType(type) {
 // UPLOAD FOTO ÎN SUPABASE
 //--------------------------------------------------
 async function uploadPhoto(file, idEchipament) {
-
     const fileName = `${idEchipament}_${Date.now()}.jpg`;
 
     const resp = await fetch(
@@ -85,8 +84,8 @@ document.getElementById("photo-input").onchange = (e) => {
     if (!file) return;
 
     pendingEntry.photoFile = file;
-    const preview = document.getElementById("photo-preview");
 
+    const preview = document.getElementById("photo-preview");
     preview.src = URL.createObjectURL(file);
     preview.style.display = "block";
 
@@ -105,19 +104,21 @@ function showPopup(entry) {
     document.getElementById("btn-delete-photo").style.display = "none";
     pendingEntry.photoFile = null;
 
+    // reafisează butoanele Conform/Neconform
+    document.querySelector(".cn-buttons").style.display = "flex";
+
     document.getElementById("popup-bg").style.display = "flex";
 }
 
 function closePopup() {
     document.getElementById("popup-bg").style.display = "none";
     document.getElementById("popup-observatii").style.display = "none";
-    document.getElementById("obs-text").value = "";
-    document.getElementById("photo-preview").style.display = "none";
-    document.getElementById("btn-delete-photo").style.display = "none";
     pendingEntry.photoFile = null;
 }
 
-// ✅ CONFORM
+//--------------------------------------------------
+// CONFORM
+//--------------------------------------------------
 document.getElementById("btn-conform").onclick = async () => {
     pendingEntry.stare = "conform";
     pendingEntry.observatii = "";
@@ -134,12 +135,17 @@ document.getElementById("btn-conform").onclick = async () => {
     closePopup();
 };
 
-// ✅ NECONFORM
+//--------------------------------------------------
+// NECONFORM
+//--------------------------------------------------
 document.getElementById("btn-neconform").onclick = () => {
+    document.querySelector(".cn-buttons").style.display = "none";
     document.getElementById("popup-observatii").style.display = "block";
 };
 
-// ✅ ȘTERGE POZA
+//--------------------------------------------------
+// ȘTERGE FOTO
+//--------------------------------------------------
 document.getElementById("btn-delete-photo").onclick = () => {
     document.getElementById("photo-preview").style.display = "none";
     document.getElementById("btn-delete-photo").style.display = "none";
@@ -147,7 +153,9 @@ document.getElementById("btn-delete-photo").onclick = () => {
     pendingEntry.photoFile = null;
 };
 
-// ✅ SALVARE OBSERVAȚII + FOTO
+//--------------------------------------------------
+// SALVARE OBSERVAȚII + FOTO
+//--------------------------------------------------
 document.getElementById("btn-save-obs").onclick = async () => {
     const obs = document.getElementById("obs-text").value.trim();
 
@@ -244,7 +252,7 @@ async function scanNFC() {
 }
 
 //--------------------------------------------------
-// SALVARE / UPDATE echipamente
+// SAVE / UPDATE ECHIPAMENTE
 //--------------------------------------------------
 async function saveToSupabase(entry) {
     const checkUrl = `${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}&select=*`;
@@ -279,7 +287,7 @@ async function saveToSupabase(entry) {
 }
 
 //--------------------------------------------------
-// LISTA PRINCIPALĂ (cu icon + tip afișat)
+// LISTA PRINCIPALĂ — CU ICON + TIP
 //--------------------------------------------------
 function addCard(entry) {
     const lista = document.getElementById("lista");
@@ -302,7 +310,7 @@ function addCard(entry) {
 }
 
 //--------------------------------------------------
-// SALVARE ISTORIC
+// SAVE HISTORY
 //--------------------------------------------------
 async function saveToHistory(entry) {
 
@@ -328,7 +336,7 @@ async function saveToHistory(entry) {
 }
 
 //--------------------------------------------------
-// LOAD HISTORY — skeleton + thumbnail + fullscreen
+// LOAD HISTORY — DESCRESCĂTOR + GLOW + THUMBNAIL + SKELETON
 //--------------------------------------------------
 async function loadHistory(id) {
     const box = document.getElementById("istoric");
@@ -336,7 +344,7 @@ async function loadHistory(id) {
 
     box.style.display = "block";
 
-    // ✅ Skeleton loading (3 carduri)
+    // ✅ skeleton loader (3 carduri)
     content.innerHTML = `
         <div class="skeleton"></div>
         <div class="skeleton"></div>
@@ -353,6 +361,7 @@ async function loadHistory(id) {
         return;
     }
 
+    // ✅ sortare descrescătoare
     data.sort((a, b) => new Date(b.data_scan) - new Date(a.data_scan));
 
     let html = "";
@@ -361,26 +370,22 @@ async function loadHistory(id) {
         const icon = getIconForType(detectTip(item.id_echipament));
 
         html += `
-        <div class="equip-card history-card"
-             data-photo="${item.poza || ""}"
-             style="border-left: 6px solid ${item.stare === 'conform' ? '#16a34a' : '#dc2626'};">
+        <div class="equip-card history-card ${item.stare === 'conform' ? 'conform' : 'neconform'}"
+             data-photo="${item.poza || ""}">
 
             <div class="equip-id">${icon} ${item.id_echipament.replace(/^\w+_/, "")}</div>
 
             <div class="equip-status">🔖 Tip: ${detectTip(item.id_echipament).toUpperCase()}</div>
 
             <div class="equip-loc">📍 ${item.locatie}</div>
-
             <div class="equip-time">⏱ ${item.data_scan}</div>
 
             <div class="equip-status">Stare: ${item.stare}</div>
 
             ${item.observatii ? `<div class="equip-status">✏️ Observații: ${item.observatii}</div>` : ""}
 
-            ${item.poza 
-                ? `<img src="${item.poza}" class="history-photo" 
-                       style="width:90px; border-radius:10px; margin-top:10px; cursor:pointer;">`
-                : ""}
+            ${item.poza ? ` <img src="${item.poza}" class="history-photo"
+                style="width:90px; margin-top:10px; border-radius:10px; cursor:pointer;">` : ""}
         </div>
         `;
     });
@@ -389,7 +394,7 @@ async function loadHistory(id) {
 }
 
 //--------------------------------------------------
-// CLICK ISTORIC FOTO → FULLSCREEN
+// FULLSCREEN FOTO (click pe thumbnail)
 //--------------------------------------------------
 document.addEventListener("click", (e) => {
 
