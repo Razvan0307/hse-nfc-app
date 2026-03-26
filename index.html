@@ -1,175 +1,102 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NFC Scan</title>
 
-    <!-- ✅ Elimină definitiv eroarea favicon.ico 404 -->
-    <link rel="icon" href="data:,">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
 
     <style>
-        /* ✅ FUNDAL ANIMAT PREMIUM */
+        /* ✅ FUNDAL ANIMAT */
         body {
             margin: 0;
             font-family: "Segoe UI", Arial, sans-serif;
-            background: linear-gradient(135deg,#ffffff,#e8e8ff,#c7ccff,#b79dff,#7e67ff);
+            background: linear-gradient(135deg, #ffffff, #e8e8ff, #c7ccff, #b79dff, #7e67ff);
             background-size: 400% 400%;
-            animation: bgFlow 18s ease infinite;
+            animation: bgMove 18s ease infinite;
             min-height: 100vh;
             padding-bottom: 40px;
             overflow-x: hidden;
         }
-        @keyframes bgFlow {
-            0% {background-position:0% 50%;}
-            50%{background-position:100% 50%;}
-            100%{background-position:0% 50%;}
+        @keyframes bgMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .container {
-            max-width:650px;
-            margin:auto;
-            padding:20px;
+            max-width: 650px;
+            margin: auto;
+            padding: 20px;
         }
 
-        /* ✅ HEADER PREMIUM (logo + titlu într-un top-card) */
-        .top-card {
-            background: rgba(255,255,255,0.25);
-            backdrop-filter: blur(16px);
-            padding: 28px 20px;
-            border-radius: 28px;
+        /* ✅ TITLU + LOGO */
+        .title-box {
             text-align: center;
-            box-shadow: 0 12px 32px rgba(0,0,0,0.2);
-            margin-top:30px;
-            animation: fadeDown .45s ease-out;
+            margin-top: 20px;
+            margin-bottom: 25px;
+            animation: fadeIn 0.5s ease-out;
         }
-        .top-card img {
-            width:150px;
-            margin-bottom:14px;
+        .title-box img {
+            width: 140px;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.2));
         }
-        @keyframes fadeDown {
-            from {opacity:0; transform:translateY(-25px);}
-            to   {opacity:1; transform:translateY(0);}
-        }
-        .top-title {
-            font-size:40px;
-            font-weight:900;
-            color:#1d4ed8;
-            margin:0;
-            text-shadow:0 0 12px rgba(255,255,255,0.85);
+        .title-box h1 {
+            font-size: 40px;
+            color: #1d4ed8;
+            font-weight: 900;
+            margin-top: 10px;
+            text-shadow: 0 0 12px rgba(255,255,255,0.8);
         }
 
-        /* ✅ CARD PRINCIPAL – DP World Style */
-        .main-card {
-            background: rgba(255,255,255,0.78);
-            padding: 32px;
-            border-radius: 28px;
-            box-shadow: 0 15px 38px rgba(0,0,0,0.18);
-            margin-top:35px;
-            animation: slideUp .35s ease-out;
-            backdrop-filter: blur(14px);
-        }
-        @keyframes slideUp {
-            from {opacity:0; transform:translateY(30px);}
-            to   {opacity:1; transform:translateY(0);}
-        }
-
-        #locatie {
-            color:#16a34a;
-            font-weight:700;
-        }
-
-        /* ✅ FAB – Floating Scan NFC */
-        .fab-wrapper {
-            display:flex;
-            flex-direction:column;
-            align-items:center;
-            margin-top:25px;
-        }
-        .fab-nfc {
-            width:135px;
-            height:135px;
-            border-radius:50%;
-            background: radial-gradient(circle,#4F46E5,#312E81);
-            border:none;
-            color:white;
-            font-size:62px;
-            cursor:pointer;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            box-shadow:0 0 40px rgba(79,70,229,0.6);
-            animation:floating 2.3s infinite ease-in-out;
-        }
-        @keyframes floating {
-            0%   {transform:scale(1) translateY(0);}
-            50%  {transform:scale(1.08) translateY(-6px);}
-            100% {transform:scale(1) translateY(0);}
-        }
-        .fab-label {
-            margin-top:14px;
-            font-size:22px;
-            font-weight:800;
-            color:#312E81;
-        }
-
-        /* ✅ CARD-BUTTONS PREMIUM */
-        .card-btn {
-            padding:18px;
-            border-radius:22px;
-            margin-top:18px;
-            font-size:20px;
-            font-weight:800;
-            color:white;
-            text-align:center;
-            cursor:pointer;
-            box-shadow:0 8px 25px rgba(0,0,0,0.16);
-            transition:.15s ease;
-            animation: fadeIn .35s ease-out;
-        }
-        .card-btn:hover {transform:scale(1.03);}
-        .card-btn:active {transform:scale(.95);}
-
-        .blue-btn   {background:#1e40af;}
-        .yellow-btn {background:#f59e0b;}
-        .red-btn    {background:#dc2626;}
-
-        /* ✅ TITLURI SECȚIUNI */
-        .section-title {
-            margin-top:40px;
-            margin-bottom:10px;
-            font-size:22px;
-            font-weight:900;
-            color:white;
-            text-shadow:0 0 8px rgba(0,0,0,0.25);
+        /* ✅ CARD */
+        .card {
+            background: rgba(255,255,255,0.9);
+            padding: 22px;
+            border-radius: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            margin-bottom: 25px;
+            backdrop-filter: blur(8px);
         }
 
         /* ✅ CARD-URI SCANATE */
         .equip-card {
-            background:white;
-            padding:18px;
-            margin-top:15px;
-            border-radius:16px;
-            border-left:6px solid #1d4ed8;
-            box-shadow:0 6px 16px rgba(0,0,0,0.15);
-            animation: slideUp .3s ease-out;
+            background: white;
+            padding: 16px;
+            margin-top: 16px;
+            border-radius: 16px;
+            border-left: 6px solid #1d4ed8;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+            animation: slideUp 0.35s ease-out;
         }
-        .conform {box-shadow:0 0 16px rgba(22,163,74,0.6);}
-        .neconform{box-shadow:0 0 16px rgba(220,38,38,0.6);}
+        @keyframes slideUp {
+            from { opacity:0; transform: translateY(20px); }
+            to   { opacity:1; transform: translateY(0); }
+        }
 
-        /* ✅ SKELETON LOADING */
-        .skeleton-card {
-            height:80px;
-            border-radius:18px;
-            background: linear-gradient(90deg,#eaeaea,#f5f5f5,#eaeaea);
-            background-size:200% 100%;
-            animation: skeletonMove 1.3s infinite;
-            margin-bottom:14px;
+        .conform  { box-shadow: 0 0 16px rgba(22,163,74,0.6); }
+        .neconform{ box-shadow: 0 0 16px rgba(220,38,38,0.6); }
+
+        /* ✅ BUTOANE STANDARD */
+        .btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 20px;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            margin: 10px 0;
+            color: white;
+            font-weight: 700;
         }
-        @keyframes skeletonMove {
-            0% {background-position:200% 0;}
-            100%{background-position:-200% 0;}
-        }
+        .btn-blue   { background: #1d4ed8; }
+        .btn-blue2  { background: #1e40af; }
+        .btn-green  { background: #16a34a; }
+        .btn-yellow { background:#f59e0b; }
+        .btn-red    { background:#dc2626; }
+
+        #locatie { color:#16a34a; font-weight:bold; }
 
         /* ✅ POPUP */
         #popup-bg {
@@ -183,34 +110,88 @@
             align-items:center;
             z-index:9999;
         }
+
         #popup {
-            background:rgba(255,255,255,0.6);
-            border-radius:24px;
+            background:rgba(255,255,255,0.55);
+            border-radius:25px;
+            border:1px solid rgba(255,255,255,0.25);
             padding:25px;
             width:90%;
-            max-width:420px;
-            box-shadow:0 8px 25px rgba(0,0,0,0.25);
-            animation:fadeIn .3s ease-out;
-            backdrop-filter:blur(14px);
+            max-width:430px;
+            max-height:80vh;
+            overflow-y:auto;
+            animation: fadeIn 0.25s ease-out;
+            backdrop-filter:blur(15px);
         }
-        @keyframes fadeIn {from {opacity:0;} to {opacity:1;}}
 
-        .cn-buttons {
+        /* ✅ TEXTAREA FIX */
+        #obs-text {
+            width:100%;
+            padding:14px;
+            border-radius:16px;
+            border:1px solid #ccc;
+            font-size:17px;
+            resize:none;
+            box-sizing:border-box;
+            box-shadow:0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        /* ✅ FOTO PREVIEW */
+        #photo-preview {
+            display:none;
+            width:100%;
+            margin-top:12px;
+            border-radius:16px;
+            box-shadow:0 4px 14px rgba(0,0,0,0.25);
+        }
+
+        /* ✅ FULLSCREEN */
+        #fullscreen-bg {
+            display:none;
+            position:fixed;
+            top:0; left:0;
+            width:100%; height:100%;
+            background:rgba(0,0,0,0.9);
+            justify-content:center;
+            align-items:center;
+            z-index:10000;
+        }
+        #fullscreen-img {
+            max-width:92%;
+            max-height:92%;
+            border-radius:16px;
+            animation: zoomIn 0.25s ease-out;
+        }
+        @keyframes zoomIn {
+            from { opacity:0; transform:scale(0.85); }
+            to   { opacity:1; transform:scale(1); }
+        }
+
+        /* ✅ FAB NFC */
+        @keyframes fabPulse {
+            0%   { transform:scale(1);   box-shadow:0 0 20px rgba(29,78,216,0.45); }
+            50%  { transform:scale(1.1); box-shadow:0 0 30px rgba(29,78,216,0.75); }
+            100% { transform:scale(1);   box-shadow:0 0 20px rgba(29,78,216,0.45); }
+        }
+
+        /* ✅ Conform / Neconform */
+        .cn-buttons{
             display:flex;
             justify-content:center;
             gap:20px;
             margin-top:20px;
         }
-        .cn-buttons button {
+        .cn-buttons button{
             width:45%;
-            padding:16px;
+            padding:18px;
             border:none;
             border-radius:18px;
-            cursor:pointer;
+            font-size:22px;
+            font-weight:700;
             color:white;
-            font-size:20px;
-            font-weight:800;
+            cursor:pointer;
         }
+
     </style>
 </head>
 
@@ -218,38 +199,67 @@
 
 <div class="container">
 
-    <!-- ✅ HEADER PREMIUM -->
-    <div class="top-card">
- dpw.png
-        <h1 class="top-title">NFC Scan</h1>
+    <!-- ✅ TITLU + LOGO -->
+    <div class="title-box">
+ <img src="dpw.png" alt="DPW Logo">
+        <h1>NFC Scan</h1>
     </div>
 
     <!-- ✅ CARD PRINCIPAL -->
-    <div class="main-card">
+    <div class="card">
         <p><strong>Locația curentă:</strong> <span id="locatie">Nesetat</span></p>
 
-        <div class="fab-wrapper">
-            <button id="scanNFC" class="fab-nfc">📡</button>
-            <div class="fab-label">Scan NFC</div>
+        <!-- ✅ FAB NFC -->
+        <div style="display:flex; flex-direction:column; align-items:center; margin-top:20px;">
+            <button id="scanNFC"
+                style="
+                    width:120px;
+                    height:120px;
+                    background:#1d4ed8;
+                    border:none;
+                    border-radius:50%;
+                    display:flex;
+                    justify-content:center;
+                    align-items:center;
+                    font-size:52px;
+                    color:white;
+                    cursor:pointer;
+                    animation: fabPulse 2.4s infinite ease-in-out;
+                ">
+                📡
+            </button>
+
+            <span style="
+                margin-top:12px;
+                font-size:20px;
+                font-weight:800;
+                color:#1d4ed8;
+            ">
+                Scan NFC
+            </span>
         </div>
 
-        index.html
-            <button class="card-btn blue-btn">✍️ Scrie NFC</button>
-        </a>
+        <a href="write.html"><button class="btn btn-green">✍️ Scrie NFC</button></a>
 
-        <p id="scanStatus" style="display:none; text-align:center; font-weight:800; color:#1d4ed8;">
+        <p id="scanStatus"
+           style="display:none; text-align:center; font-weight:bold; color:#1d4ed8;">
             🔎 Apropie telefonul de tag...
         </p>
     </div>
 
-    <!-- ✅ SECȚIUNE: Echipamente scanate -->
-    <h2 class="section-title">Echipamente scanate</h2>
+    <h2 style="font-size:22px; margin-top:25px; color:white;">Echipamente scanate:</h2>
 
     <div id="lista"></div>
 
-    <div id="showHistory" class="card-btn blue-btn">📜 Arată istoricul</div>
-    <div id="exportCSV" class="card-btn yellow-btn">📁 Exportă în Excel</div>
-    <div id="clearData" class="card-btn red-btn">🗑️ Șterge afișarea locală</div>
+    <button id="showHistory" class="btn btn-blue">📜 Arată istoricul echipamentului</button>
+
+    <div id="istoric" class="card" style="display:none;">
+        <h3>Istoric echipament</h3>
+        <div id="istoricContent"></div>
+    </div>
+
+    <button id="exportCSV" class="btn btn-yellow">📁 Exportă în Excel</button>
+    <button id="clearData" class="btn btn-red">🗑️ Șterge afișarea locală</button>
 
 </div>
 
@@ -257,7 +267,7 @@
 <div id="popup-bg">
     <div id="popup">
 
-        <h3 style="text-align:center; font-size:26px; font-weight:900; color:#1d4ed8;">
+        <h3 style="text-align:center; font-size:26px; color:#1d4ed8; font-weight:900;">
             Echipamentul este conform?
         </h3>
 
@@ -266,13 +276,12 @@
             <button id="btn-neconform" style="background:#dc2626;">❌ Neconform</button>
         </div>
 
+        <!-- ✅ OBSERVAȚII + FOTO -->
         <div id="popup-observatii" style="display:none; margin-top:20px;">
 
-            <textarea id="obs-text"
-                      style="width:100%; padding:14px; border-radius:16px; border:1px solid #ccc; font-size:17px;"
-                      placeholder="Introduceți observațiile..."></textarea>
+            <textarea id="obs-text" placeholder="Introduceți observațiile..."></textarea>
 
-            <button id="btn-photo" class="card-btn blue-btn" style="margin-top:15px;">
+            <button id="btn-photo" class="btn btn-blue2" style="margin-top:15px;">
                 📸 Adaugă fotografie
             </button>
 
@@ -280,44 +289,65 @@
                 <input type="file" id="photo-input" accept="image/*" capture="environment">
             </label>
 
-            <img id="photo-preview" style="display:none; width:100%; margin-top:12px; border-radius:16px;">
+            <img id="photo-preview">
 
             <button id="btn-delete-photo"
-                    style="display:none; width:100%; margin-top:12px; padding:16px; background:#dc2626; border:none; border-radius:16px; color:white; font-size:19px;">
+                style="
+                    display:none;
+                    width:100%;
+                    margin-top:12px;
+                    padding:16px;
+                    background:#dc2626;
+                    border:none;
+                    border-radius:16px;
+                    font-size:19px;
+                    font-weight:700;
+                    cursor:pointer;
+                    color:white;
+                ">
                 🗑️ Șterge fotografia
             </button>
 
             <div id="loader"
-                 style="display:none; text-align:center; margin-top:14px; color:#1d4ed8; font-weight:800;">
+                style="display:none; text-align:center; margin-top:12px; color:#1d4ed8; font-weight:800;">
                 ⏳ Se încarcă...
             </div>
 
             <button id="btn-save-obs"
-                    style="width:100%; margin-top:20px; padding:16px; background:#1e40af; border:none; border-radius:18px; font-size:20px; font-weight:900; color:white;">
+                style="
+                    width:100%;
+                    margin-top:20px;
+                    padding:16px;
+                    background:#1e40af;
+                    border:none;
+                    border-radius:18px;
+                    color:white;
+                    font-size:21px;
+                    font-weight:800;
+                    cursor:pointer;
+                ">
                 💾 Salvează
             </button>
-        </div>
 
+        </div>
     </div>
 </div>
 
 <!-- ✅ FULLSCREEN FOTO -->
-<div id="fullscreen-bg" style="display:none;">
+<div id="fullscreen-bg">
     <img id="fullscreen-img">
 </div>
 
 <script>
 document.getElementById("photo-preview").onclick = () => {
-    const modal = document.getElementById("fullscreen-bg");
-    document.getElementById("fullscreen-img").src =
-        document.getElementById("photo-preview").src;
-    modal.style.display = "flex";
+    const full = document.getElementById("fullscreen-bg");
+    const img = document.getElementById("fullscreen-img");
+    img.src = document.getElementById("photo-preview").src;
+    full.style.display = "flex";
 };
-
 document.getElementById("fullscreen-bg").onclick = () => {
     document.getElementById("fullscreen-bg").style.display = "none";
 };
-
 document.getElementById("btn-delete-photo").onclick = () => {
     document.getElementById("photo-preview").style.display = "none";
     document.getElementById("btn-delete-photo").style.display = "none";
@@ -325,7 +355,7 @@ document.getElementById("btn-delete-photo").onclick = () => {
 };
 </script>
 
-app.js</script>
+<script src="app.js"></script>
 
 <script>
 if ("serviceWorker" in navigator) {
