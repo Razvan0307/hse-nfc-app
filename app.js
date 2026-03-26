@@ -1,4 +1,4 @@
-console.log(" LOADED6464");
+console.log(" LOADED");
 //--------------------------------------------------
 // CONFIG SUPABASE
 //--------------------------------------------------
@@ -257,7 +257,7 @@ async function scanNFC() {
 //--------------------------------------------------
 async function saveToSupabase(entry) {
 
-    // ✅ Curățăm ID-ul ca să eliminăm caracterele ascunse
+    // curățăm ID-ul ca să nu conțină newline sau caractere ascunse
     entry.id_echipament = entry.id_echipament
         .replace(/\0/g, "")
         .replace(/\r/g, "")
@@ -276,7 +276,7 @@ async function saveToSupabase(entry) {
     }).then(r => r.json());
 
     if (existing.length > 0) {
-        // ✅ PATCH corect
+
         await fetch(`${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}`, {
             method: "PATCH",
             headers: {
@@ -287,6 +287,22 @@ async function saveToSupabase(entry) {
             },
             body: JSON.stringify(entry)
         });
+
+    } else {
+
+        await fetch(`${SUPABASE_URL}/rest/v1/echipamente`, {
+            method: "POST",
+            headers: {
+                apikey: SUPABASE_KEY,
+                Authorization: `Bearer ${SUPABASE_KEY}`,
+                "Content-Type": "application/json",
+                Prefer: "return=representation"
+            },
+            body: JSON.stringify(entry)
+        });
+
+    }
+}
 
     } else {
         // ✅ INSERT corect
