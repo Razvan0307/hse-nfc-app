@@ -184,17 +184,21 @@ document.getElementById("btn-save-obs").onclick = async () => {
 //--------------------------------------------------
 function detectTip(idRaw) {
 
+    // ✅ Curățare completă a ID-ului
     const id = idRaw
         .replace(/\0/g, "")
         .replace(/\r/g, "")
         .replace(/\n/g, "")
         .replace(/\t/g, "")
-        .trim();
+        .replace(/ /g, "")
+        .trim()
+        .toUpperCase();
 
     if (id.startsWith("HAM_")) return "ham";
     if (id.startsWith("VESTA_")) return "vesta";
     if (id.startsWith("STING_")) return "stingator";
     if (id.startsWith("KIT_")) return "kit";
+
     return "necunoscut";
 }
 
@@ -214,19 +218,22 @@ async function scanNFC() {
 
         reader.onreading = async (event) => {
             event.preventDefault();
+
             const now = Date.now();
             if (now - lastScanTime < 1500) return;
             lastScanTime = now;
 
-            // ✅ Curățăm textul NFC!
+            // ✅ Curățăm TEXTUL NFC complet
             const rawText = new TextDecoder()
                 .decode(event.message.records[0].data)
                 .replace(/\0/g, "")
                 .replace(/\r/g, "")
                 .replace(/\n/g, "")
                 .replace(/\t/g, "")
+                .replace(/ /g, "")
                 .trim();
 
+            // ✅ Detectăm locație
             if (rawText.startsWith("LOC_")) {
                 currentLocation = rawText.replace("LOC_", "");
                 document.getElementById("locatie").textContent = currentLocation;
@@ -240,6 +247,7 @@ async function scanNFC() {
             const id = rawText;
             lastScannedID = id;
 
+            // ✅ TIP funcțional
             const tip = detectTip(id);
             if (tip === "necunoscut") {
                 alert("❌ Tag necunoscut!");
@@ -249,7 +257,7 @@ async function scanNFC() {
 
             const timestamp = new Date().toLocaleString("ro-RO");
 
-            const entry = {
+            pendingEntry = {
                 id_echipament: id,
                 tip,
                 locatie: currentLocation,
@@ -259,7 +267,7 @@ async function scanNFC() {
                 data_scan: timestamp
             };
 
-            showPopup(entry);
+            showPopup(pendingEntry);
 
             isScanning = false;
             document.getElementById("scanStatus").style.display = "none";
@@ -277,16 +285,18 @@ async function scanNFC() {
 //--------------------------------------------------
 async function saveToSupabase(entry) {
 
-    // ✅ Curățăm ID-ul pentru siguranță
+    // ✅ Curățăm ID-ul înainte de orice
     entry.id_echipament = entry.id_echipament
         .replace(/\0/g, "")
         .replace(/\r/g, "")
         .replace(/\n/g, "")
         .replace(/\t/g, "")
+        .replace(/ /g, "")
         .trim();
 
-    // ✅ CORECT – fără &amp;
-    const checkUrl = `${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}&select=*`;
+    // ✅ URL CORECT (NU &amp;)
+    const checkUrl =
+        `${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}&select=*`;
 
     const existing = await fetch(checkUrl, {
         headers: {
@@ -295,9 +305,10 @@ async function saveToSupabase(entry) {
         }
     }).then(r => r.json());
 
+
     if (existing.length > 0) {
 
-        // ✅ UPDATE
+        // ✅ UPDATE în echipamente
         await fetch(`${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}`, {
             method: "PATCH",
             headers: {
@@ -311,7 +322,7 @@ async function saveToSupabase(entry) {
 
     } else {
 
-        // ✅ INSERT
+        // ✅ INSERT în echipamente
         await fetch(`${SUPABASE_URL}/rest/v1/echipamente`, {
             method: "POST",
             headers: {
