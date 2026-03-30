@@ -1,4 +1,5 @@
-console.log(" L736OADEDfaf");
+console.log("✅ APP.JS LOADED");
+
 //--------------------------------------------------
 // CONFIG SUPABASE
 //--------------------------------------------------
@@ -105,7 +106,6 @@ function showPopup(entry) {
     document.getElementById("btn-delete-photo").style.display = "none";
     pendingEntry.photoFile = null;
 
-    // reafisează butoanele Conform/Neconform
     document.querySelector(".cn-buttons").style.display = "flex";
 
     document.getElementById("popup-bg").style.display = "flex";
@@ -180,9 +180,17 @@ document.getElementById("btn-save-obs").onclick = async () => {
 };
 
 //--------------------------------------------------
-// DETECTARE TIP
+// DETECTARE TIP (cu ID curățat)
 //--------------------------------------------------
-function detectTip(id) {
+function detectTip(idRaw) {
+
+    const id = idRaw
+        .replace(/\0/g, "")
+        .replace(/\r/g, "")
+        .replace(/\n/g, "")
+        .replace(/\t/g, "")
+        .trim();
+
     if (id.startsWith("HAM_")) return "ham";
     if (id.startsWith("VESTA_")) return "vesta";
     if (id.startsWith("STING_")) return "stingator";
@@ -191,7 +199,7 @@ function detectTip(id) {
 }
 
 //--------------------------------------------------
-// SCAN NFC
+// SCAN NFC — versiune corectată cu ID curat
 //--------------------------------------------------
 async function scanNFC() {
     if (isScanning) return;
@@ -210,7 +218,14 @@ async function scanNFC() {
             if (now - lastScanTime < 1500) return;
             lastScanTime = now;
 
-            const rawText = new TextDecoder().decode(event.message.records[0].data).trim();
+            // ✅ Curățăm textul NFC!
+            const rawText = new TextDecoder()
+                .decode(event.message.records[0].data)
+                .replace(/\0/g, "")
+                .replace(/\r/g, "")
+                .replace(/\n/g, "")
+                .replace(/\t/g, "")
+                .trim();
 
             if (rawText.startsWith("LOC_")) {
                 currentLocation = rawText.replace("LOC_", "");
@@ -258,9 +273,19 @@ async function scanNFC() {
 }
 
 //--------------------------------------------------
-// SAVE / UPDATE ECHIPAMENTE
+// SAVE / UPDATE ECHIPAMENTE – versiune corectată
 //--------------------------------------------------
 async function saveToSupabase(entry) {
+
+    // ✅ Curățăm ID-ul pentru siguranță
+    entry.id_echipament = entry.id_echipament
+        .replace(/\0/g, "")
+        .replace(/\r/g, "")
+        .replace(/\n/g, "")
+        .replace(/\t/g, "")
+        .trim();
+
+    // ✅ CORECT – fără &amp;
     const checkUrl = `${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}&select=*`;
 
     const existing = await fetch(checkUrl, {
@@ -271,6 +296,8 @@ async function saveToSupabase(entry) {
     }).then(r => r.json());
 
     if (existing.length > 0) {
+
+        // ✅ UPDATE
         await fetch(`${SUPABASE_URL}/rest/v1/echipamente?id_echipament=eq.${entry.id_echipament}`, {
             method: "PATCH",
             headers: {
@@ -281,7 +308,10 @@ async function saveToSupabase(entry) {
             },
             body: JSON.stringify(entry)
         });
+
     } else {
+
+        // ✅ INSERT
         await fetch(`${SUPABASE_URL}/rest/v1/echipamente`, {
             method: "POST",
             headers: {
@@ -296,7 +326,7 @@ async function saveToSupabase(entry) {
 }
 
 //--------------------------------------------------
-// ADD CARD (fără poze — varianta A)
+// ADD CARD
 //--------------------------------------------------
 function addCard(entry) {
     const lista = document.getElementById("lista");
@@ -315,7 +345,7 @@ function addCard(entry) {
 }
 
 //--------------------------------------------------
-// SAVE HISTORY (cu poza)
+// SAVE HISTORY
 //--------------------------------------------------
 async function saveToHistory(entry) {
     const payload = {
@@ -327,7 +357,7 @@ async function saveToHistory(entry) {
         data_scan: entry.data_scan
     };
 
-    const resp = await fetch(`${SUPABASE_URL}/rest/v1/echipamente_istoric`, {
+    await fetch(`${SUPABASE_URL}/rest/v1/echipamente_istoric`, {
         method: "POST",
         headers: {
             apikey: SUPABASE_KEY,
@@ -337,14 +367,10 @@ async function saveToHistory(entry) {
         },
         body: JSON.stringify(payload)
     });
-
-    if (!resp.ok) {
-        console.error("❌ EROARE SUPABASE HISTORIC:", await resp.text());
-    }
 }
 
 //--------------------------------------------------
-// LOAD HISTORY (afișează IMAGINEA + icon foto + fullscreen)
+// LOAD HISTORY
 //--------------------------------------------------
 async function loadHistory(id) {
 
@@ -373,22 +399,21 @@ async function loadHistory(id) {
     let html = "";
 
     data.forEach(item => {
-
         html += `
-        <div class="equip-card history-card" 
+        <div class="equip-card history-card"
              data-photo="${item.poza || ""}"
              style="border-left: 6px solid ${item.stare === 'conform' ? '#16a34a' : '#dc2626'};">
-            
+
             <div class="equip-id">🧰 ${item.id_echipament.replace(/^\w+_/, "")}</div>
             <div class="equip-loc">📍 ${item.locatie}</div>
             <div class="equip-time">⏱ ${item.data_scan}</div>
             <div class="equip-status">Stare: ${item.stare}</div>
 
-            ${item.observatii ? `<div class="equip-status">✏️ Observații: ${item.observatii}</div>` : ""}
+            ${item.observatii ? `<div class="equip-status">✏️ ${item.observatii}</div>` : ""}
 
             ${item.poza 
-                ? `<div class="equip-status">📷 Fotografie disponibilă</div>
-                   <img src="${item.poza}" class="history-photo" style="width:100%;margin-top:10px;border-radius:12px;">`
+                ? `<img src="${item.poza}" class="history-photo"
+                        style="width:100%; margin-top:10px; border-radius:12px;">`
                 : ""
             }
         </div>
@@ -399,7 +424,7 @@ async function loadHistory(id) {
 }
 
 //--------------------------------------------------
-// CLICK PE CARD ISTORIC → FULLSCREEN FOTO
+// FULLSCREEN FOTO
 //--------------------------------------------------
 document.addEventListener("click", (e) => {
     const card = e.target.closest(".history-card");
