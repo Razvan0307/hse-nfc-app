@@ -1,4 +1,4 @@
-console.log("✅ APP.JS LOADED");
+console.log("✅42 APP.JS LOADED");
 
 //--------------------------------------------------
 // CONFIG SUPABASE
