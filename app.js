@@ -191,7 +191,6 @@ async function scanNFC() {
                 .replace(/ /g, "")
                 .trim();
 
-            // ✅ MESAJ DISPARĂ DOAR AICI
             document.getElementById("scanStatus").style.display = "none";
 
             if (raw.startsWith("LOC_")) {
@@ -235,7 +234,7 @@ async function scanNFC() {
 }
 
 //--------------------------------------------------
-// SAVE / UPDATE ECHIPAMENTE (FINAL)
+// SAVE / UPDATE ECHIPAMENTE 
 //--------------------------------------------------
 async function saveToSupabase(entry) {
 
@@ -291,7 +290,7 @@ async function saveToSupabase(entry) {
 }
 
 //--------------------------------------------------
-// SALVEAZĂ ISTORIC (cu tip)
+// SALVEAZĂ ISTORIC 
 //--------------------------------------------------
 async function saveToHistory(entry) {
     const payload = {
@@ -317,7 +316,7 @@ async function saveToHistory(entry) {
 }
 
 //--------------------------------------------------
-// CARD UI (cu TIP)
+// CARD UI 
 //--------------------------------------------------
 function addCard(entry) {
     const lista = document.getElementById("lista");
@@ -337,7 +336,7 @@ function addCard(entry) {
 }
 
 //--------------------------------------------------
-// LOAD HISTORY (cu TIP)
+// LOAD HISTORY 
 //--------------------------------------------------
 document.getElementById("showHistory").onclick = async () => {
     if (!lastScannedID) {
