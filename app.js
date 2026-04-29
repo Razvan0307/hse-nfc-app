@@ -65,8 +65,15 @@ async function uploadPhoto(file, idEchipament) {
 //--------------------------------------------------
 // POPUP HANDLERS
 //--------------------------------------------------
+//--------------------------------------------------
+// POPUP HANDLERS
+//--------------------------------------------------
 function showPopup(entry) {
     pendingEntry = entry;
+
+    document.getElementById("popup-id-echipament").textContent = entry.id_echipament.replace(/^\w+_/, "");
+    document.getElementById("popup-tip-echipament").textContent = entry.tip;
+    // ------------------------------------------
 
     document.getElementById("popup-observatii").style.display = "none";
     document.getElementById("obs-text").value = "";
@@ -77,10 +84,6 @@ function showPopup(entry) {
     document.querySelector(".cn-buttons").style.display = "flex";
 
     document.getElementById("popup-bg").style.display = "flex";
-}
-
-function closePopup() {
-    document.getElementById("popup-bg").style.display = "none";
 }
 
 //--------------------------------------------------
