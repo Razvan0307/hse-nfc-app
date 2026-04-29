@@ -1,4 +1,4 @@
-console.log("✅ app.js loaded");
+console.log("✅-app.js loaded");
 
 //--------------------------------------------------
 // CONFIG SUPABASE
@@ -65,9 +65,7 @@ async function uploadPhoto(file, idEchipament) {
 //--------------------------------------------------
 // POPUP HANDLERS
 //--------------------------------------------------
-//--------------------------------------------------
-// POPUP HANDLERS
-//--------------------------------------------------
+
 function showPopup(entry) {
     pendingEntry = entry;
 
@@ -84,6 +82,9 @@ function showPopup(entry) {
     document.querySelector(".cn-buttons").style.display = "flex";
 
     document.getElementById("popup-bg").style.display = "flex";
+}
+function closePopup() {
+    document.getElementById("popup-bg").style.display = "none";
 }
 
 //--------------------------------------------------
